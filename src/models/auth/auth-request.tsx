@@ -11,6 +11,7 @@ export interface LoginRequest {
     username: string;
 }
 
+
 export interface RegisterRequest {
     email: string;
     institution: string;

@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
+import { ChangeEvent, MouseEvent, ReactNode, useState, useEffect } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -38,6 +38,12 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { authService } from '../../../services/auth.service'
+import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { LoginRequest } from '../../../models/auth/auth-request';
+
 
 interface State {
   password: string
@@ -84,6 +90,42 @@ const LoginPage = () => {
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
+
+
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().required('Email is required'),
+    password: Yup.string().required('Password is required'),
+    username: Yup.string().required('Username is required'),
+  });
+  const formOptions = { resolver: yupResolver(validationSchema) };
+
+  const { register, handleSubmit, setError, formState } = useForm(formOptions);
+  const { errors } = formState;
+
+  const onSubmit = (email: string, password: string, username: string) => {
+    const loginRequest: LoginRequest = {
+      email: email,
+      password: password,
+      username: username,
+      deviceInfo: {
+        deviceId: '1',
+        deviceType: 'Laptop',
+        notificationToken: 'dadadwefefyes'
+      }
+    }
+
+    return authService.login(loginRequest).then((data) => {
+      console.log(data);
+      
+      // const returnUrl: string = router.query.returnUrl || '/';
+      // router.push(returnUrl);
+    })
+      .catch((error: any) => {
+        setError('apiError', { message: error });
+      })
+  }
+
 
   return (
     <Box className='content-center'>
@@ -168,13 +210,15 @@ const LoginPage = () => {
             </Typography>
             <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+          <form  onSubmit={handleSubmit(onSubmit)}>
+            <TextField autoFocus fullWidth id='email' label='Email'  {...register('email')} sx={{ marginBottom: 4 }} />
+            <TextField autoFocus fullWidth id='username' label='Username' {...register('username')} sx={{ marginBottom: 4 }} />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
+                {...register('password')}
                 id='auth-login-password'
                 onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
@@ -205,9 +249,11 @@ const LoginPage = () => {
               size='large'
               variant='contained'
               sx={{ marginBottom: 7 }}
-              onClick={() => router.push('/')}
+              disabled={formState.isSubmitting}
+              type='submit'
             >
-              Login
+               {formState.isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
+               Login
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
@@ -255,3 +301,5 @@ const LoginPage = () => {
 LoginPage.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
 
 export default LoginPage
+
+
