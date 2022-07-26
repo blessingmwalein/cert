@@ -21,7 +21,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
 import Github from 'mdi-material-ui/Github'
@@ -29,6 +30,7 @@ import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import FormHelperText from '@mui/material/FormHelperText'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -47,7 +49,10 @@ import { LoginRequest } from '../../../models/auth/auth-request';
 
 interface State {
   password: string
-  showPassword: boolean
+  showPassword: boolean,
+  message: string,
+  error: string,
+  loading: boolean
 }
 
 // ** Styled Components
@@ -68,11 +73,20 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
   }
 }))
 
+const schema = Yup.object().shape({
+  email: Yup.string().email().required(),
+  // username: Yup.string().required(),
+  password: Yup.string().required(),
+}).required();
+
 const LoginPage = () => {
   // ** State
   const [values, setValues] = useState<State>({
     password: '',
-    showPassword: false
+    showPassword: false,
+    message: '',
+    error: '',
+    loading: false
   })
 
   // ** Hook
@@ -91,40 +105,42 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
+  const clearMessageError = () => {
+    setValues({ ...values, message: "", error: "" })
+  }
 
-
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required'),
-    password: Yup.string().required('Password is required'),
-    username: Yup.string().required('Username is required'),
-  });
-  const formOptions = { resolver: yupResolver(validationSchema) };
-
-  const { register, handleSubmit, setError, formState } = useForm(formOptions);
-  const { errors } = formState;
-
-  const onSubmit = (email: string, password: string, username: string) => {
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<LoginRequest>(
+    {
+      resolver: yupResolver(schema)
+    }
+  );
+  const onSubmit = handleSubmit((data: LoginRequest) => {
+    setValues({ ...values, message: "", error: "", loading: true })
+    console.log(data)
     const loginRequest: LoginRequest = {
-      email: email,
-      password: password,
-      username: username,
+      email: data.email,
+      password: data.password,
+      username: data.email,
       deviceInfo: {
         deviceId: '1',
         deviceType: 'Laptop',
         notificationToken: 'dadadwefefyes'
-      }
+      },
     }
 
     return authService.login(loginRequest).then((data) => {
       console.log(data);
-      
-      // const returnUrl: string = router.query.returnUrl || '/';
-      // router.push(returnUrl);
+      setValues({ ...values, loading: false })
+      const returnUrl: string = router.query.returnUrl || '/';
+      router.push(returnUrl);
+
     })
       .catch((error: any) => {
-        setError('apiError', { message: error });
+        console.log(error);
+        setValues({ ...values, error: error.response?.data?.data, loading: false })
+
       })
-  }
+  });
 
 
   return (
@@ -208,18 +224,42 @@ const LoginPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Welcome to {themeConfig.templateName}! 👋🏻
             </Typography>
-            <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
+            {
+              values.message ? <Alert
+
+                severity='success'
+                sx={{ '& a': { fontWeight: 400 } }}
+              >
+                <AlertTitle>{values.message}</AlertTitle>
+              </Alert> : ''
+            }
+
+            {
+              values.error ? <Alert
+
+                severity='error'
+                sx={{ '& a': { fontWeight: 400 } }}
+              >
+                <AlertTitle>{values.error}</AlertTitle>
+
+              </Alert> : ''
+            }
           </Box>
-          <form  onSubmit={handleSubmit(onSubmit)}>
-            <TextField autoFocus fullWidth id='email' label='Email'  {...register('email')} sx={{ marginBottom: 4 }} />
-            <TextField autoFocus fullWidth id='username' label='Username' {...register('username')} sx={{ marginBottom: 4 }} />
-            <FormControl fullWidth>
+          <form onSubmit={onSubmit}>
+
+            <TextField autoFocus fullWidth id='email' label='Email'  {...register('email')} sx={{ marginBottom: 4 }}
+              helperText={errors.email && errors.email?.message}
+            />
+            {/* <TextField autoFocus fullWidth id='username' label='Username'  {...register('username')} sx={{ marginBottom: 4 }}
+              helperText={errors.username && errors.username?.message}
+            /> */}
+
+            <FormControl fullWidth  {...register('password')}>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
-                value={values.password}
-                {...register('password')}
                 id='auth-login-password'
+                {...register('password')}
                 onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
@@ -235,6 +275,10 @@ const LoginPage = () => {
                   </InputAdornment>
                 }
               />
+              <FormHelperText id='form-layouts-basic-password-helper'>
+                {errors.password && errors.password?.message}
+              </FormHelperText>
+
             </FormControl>
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
@@ -249,11 +293,10 @@ const LoginPage = () => {
               size='large'
               variant='contained'
               sx={{ marginBottom: 7 }}
-              disabled={formState.isSubmitting}
               type='submit'
+              disabled={values.loading}
             >
-               {formState.isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
-               Login
+              {values.loading ? 'Loading...' : 'Login'}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>

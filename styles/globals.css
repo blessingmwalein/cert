@@ -15,10 +15,19 @@ code {
   color: #d400ff;
   border-radius: 0.1335rem;
 }
+
 code:not([class*='language-']):before,
 code:not([class*='language-']):after {
   content: '`';
 }
+
 code[class*='language-'] {
   padding: 0;
+}
+
+#form-layouts-basic-password-helper,
+#email-helper-text,
+#username-helper-text {
+  color: red !important;
+  /* font-weight: bold; */
 }

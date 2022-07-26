@@ -20,7 +20,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
 import Github from 'mdi-material-ui/Github'
@@ -28,6 +29,9 @@ import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import FormHelperText from '@mui/material/FormHelperText'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -37,10 +41,18 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { authService } from '../../../services/auth.service'
+import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { RegisterRequest } from 'src/models/auth/auth-request'
 
 interface State {
   password: string
-  showPassword: boolean
+  showPassword: boolean,
+  message: string,
+  error: string,
+  loading: bolean
 }
 
 // ** Styled Components
@@ -63,11 +75,20 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
   }
 }))
 
+const schema = Yup.object().shape({
+  email: Yup.string().email().required(),
+  registerAsHolder: Yup.boolean().required(),
+  password: Yup.string().required(),
+}).required();
+
 const RegisterPage = () => {
   // ** States
   const [values, setValues] = useState<State>({
     password: '',
-    showPassword: false
+    showPassword: false,
+    message: '',
+    error: '',
+    loading: false
   })
 
   // ** Hook
@@ -81,6 +102,46 @@ const RegisterPage = () => {
   }
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+  }
+  const { register, handleSubmit, setError, formState: { errors }, resetField } = useForm<RegisterRequest>(
+    {
+      resolver: yupResolver(schema)
+    }
+  );
+  const clearMessageError = () => {
+    setValues({ ...values, message: "", error: "" })
+  }
+
+  const onSubmit = handleSubmit((data: RegisterRequest) => {
+    setValues({ ...values, message: "", error: "", loading: true })
+
+    console.log(data)
+    const registerRequest: RegisterRequest = {
+      email: data.email,
+      password: data.password,
+      registerAsHolder: data.registerAsHolder,
+    }
+    return authService.register(registerRequest).then((data) => {
+      console.log(data);
+      // const returnUrl: string = router.query.returnUrl || '/';
+      // router.push(returnUrl);
+      if (data.success) {
+        setValues({ ...values, message: data.data, loading: false })
+      } else {
+        setValues({ ...values, error: data.data, loading: false })
+      }
+      resetField('email')
+      resetField('password')
+    })
+      .catch((error: any) => {
+        console.log(error);
+        setValues({ ...values, error: error.response?.data?.data, loading: false })
+      })
+  });
+
+  const resendConfirmationLink = () => {
+    clearMessageError()
+    setValues({ ...values, message: "Confirmation token resend successfully" })
   }
 
   return (
@@ -164,17 +225,52 @@ const RegisterPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Adventure starts here 🚀
             </Typography>
-            <Typography variant='body2'>Make your app management easy and fun!</Typography>
+            {
+              values.message ? <Alert
+
+                severity='success'
+                sx={{ '& a': { fontWeight: 400 } }}
+              >
+                <AlertTitle>{values.message}</AlertTitle>
+                <Typography onClick={resendConfirmationLink} variant='button'>Resend Confirmation</Typography>
+              </Alert> : ''
+            }
+
+            {
+              values.error ? <Alert
+
+                severity='error'
+                sx={{ '& a': { fontWeight: 400 } }}
+              >
+                <AlertTitle>{values.error}</AlertTitle>
+
+              </Alert> : ''
+            }
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }} />
-            <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} />
-            <FormControl fullWidth>
+          <form noValidate autoComplete='off' onSubmit={onSubmit}>
+            <TextField fullWidth type='email' label='Email'  {...register('email')} sx={{ marginBottom: 4 }}
+              helperText={errors.email && errors.email?.message}
+            />
+            <FormControl fullWidth {...register('registerAsHolder')} sx={{ marginBottom: 4 }}>
+              <InputLabel id='form-layouts-separator-select-label'>Register as Holder</InputLabel>
+              <Select
+                label='Country'
+                defaultValue='false'
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+
+              >
+                <MenuItem value='true'>Yes</MenuItem>
+                <MenuItem value='false'>No</MenuItem>
+
+              </Select>
+            </FormControl>
+            <FormControl fullWidth  {...register('password')}>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
-                value={values.password}
                 id='auth-register-password'
+                {...register('password')}
                 onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
@@ -190,6 +286,9 @@ const RegisterPage = () => {
                   </InputAdornment>
                 }
               />
+              <FormHelperText id='form-layouts-basic-password-helper'>
+                {errors.password && errors.password?.message}
+              </FormHelperText>
             </FormControl>
             <FormControlLabel
               control={<Checkbox />}

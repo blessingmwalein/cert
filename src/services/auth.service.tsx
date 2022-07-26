@@ -1,9 +1,9 @@
 import Router from 'next/router'
 import axios from 'axios';
-import { LoginRequest, RefreshTokenRequest, RegisterRequest,PasswordResetRequest } from 'src/models/auth/auth-request';
+import { LoginRequest, RefreshTokenRequest, RegisterRequest, PasswordResetRequest } from 'src/models/auth/auth-request';
 import { ResponseEntity } from 'src/models/response-entity';
 
-const baseUrl = `${process.env.API_BASE_URL}auth`;
+const baseUrl = `http://apis.us-east-2.elasticbeanstalk.com/api/auth`;
 
 export const authService = {
     login,
@@ -13,16 +13,15 @@ export const authService = {
     sendResetLink
 };
 
-async function login(loginRequest: LoginRequest) : Promise<ResponseEntity>  {
+async function login(loginRequest: LoginRequest): Promise<any> {
     const url = `${baseUrl}/login`;
     const response = await axios.post(url, loginRequest);
     const { data } = response;
-    const { token } = data;
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('authData', JSON.stringify(data));
     return data;
 }
 
-async function register(registerRequest: RegisterRequest) : Promise<ResponseEntity>  {
+async function register(registerRequest: RegisterRequest): Promise<any> {
     const url = `${baseUrl}/register`;
     const response = await axios.post(url, registerRequest);
     const { data } = response;
@@ -31,7 +30,7 @@ async function register(registerRequest: RegisterRequest) : Promise<ResponseEnti
     return data;
 }
 
-async function refreshToken(refreshTokenRequest : RefreshTokenRequest) : Promise<ResponseEntity> {
+async function refreshToken(refreshTokenRequest: RefreshTokenRequest): Promise<ResponseEntity> {
     const url = `${baseUrl}/refresh`;
     const response = await axios.post(url, refreshTokenRequest);
     const { data } = response;
@@ -40,16 +39,24 @@ async function refreshToken(refreshTokenRequest : RefreshTokenRequest) : Promise
     return data;
 }
 
-async function passwordReset(passwordResetRequest : PasswordResetRequest) : Promise<ResponseEntity> {
+async function passwordReset(passwordResetRequest: PasswordResetRequest): Promise<ResponseEntity> {
     const url = `${baseUrl}/password/reset`;
     const response = await axios.post(url, passwordResetRequest);
     const { data } = response;
     return data;
 }
 
-async function sendResetLink(email : string) : Promise<ResponseEntity> {
+async function sendResetLink(email: string): Promise<ResponseEntity> {
     const url = `${baseUrl}/password/resetlink`;
     const response = await axios.post(url, { email });
     const { data } = response;
     return data;
 }
+async function resendConfirmationToken(email: string): Promise<ResponseEntity> {
+    const url = `${baseUrl}/password/resetlink`;
+    const response = await axios.post(url, { email });
+    const { data } = response;
+    return data;
+}
+
+

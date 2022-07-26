@@ -9,14 +9,15 @@ export interface LoginRequest {
     email: string;
     password: string;
     username: string;
+
 }
 
 
 export interface RegisterRequest {
     email: string;
-    institution: string;
+    // institution: string;
     password: string;
-    registerAsRegistrar: boolean;
+    registerAsHolder: boolean;
 }
 
 export interface RefreshTokenRequest {
@@ -33,4 +34,11 @@ export interface PasswordResetRequest {
 export interface UpdatePasswordRequest {
     newPassword: string;
     oldPassword: string;
+}
+
+export interface LoginResponse {
+    accessToken: string;
+    refreshToken: string;
+    tokenType: string;
+    expiryDuration: number;
 }

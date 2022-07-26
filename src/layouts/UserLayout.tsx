@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -19,6 +19,9 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
+import router from 'next/router'
+import React from 'react'
+import { LoginResponse } from 'src/models/auth/auth-request'
 
 interface Props {
   children: ReactNode
@@ -28,6 +31,17 @@ const UserLayout = ({ children }: Props) => {
   // ** Hooks
   const { settings, saveSettings } = useSettings()
 
+  const isUserAuthenticated = (): LoginResponse => {
+    return JSON.parse(sessionStorage.getItem('authData') || '{}')
+  }
+
+  useEffect(() => {
+    // checks if the user is authenticated
+    const returnUrl: string = router.query.returnUrl || '/';
+    isUserAuthenticated().accessToken
+      ? router.push(returnUrl)
+      : router.push("/pages/login");
+  }, []);
   /**
    *  The below variable will hide the current layout menu at given screen size.
    *  The menu will be accessible from the Hamburger icon only (Vertical Overlay Menu).
