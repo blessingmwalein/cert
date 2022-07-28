@@ -82,7 +82,6 @@ const UserLayout = ({ children }: Props) => {
 
   useEffect(() => {
     // checks if the user is authenticated
-
     const returnUrl: string = router.query.returnUrl || '/';
     // console.log(getNavigationFromRole());
     if (isUserAuthenticated()) {

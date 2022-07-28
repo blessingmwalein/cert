@@ -33,13 +33,13 @@ const roleUserNavigation = (): VerticalNavItemsType => {
     {
       title: 'User Verifications',
       icon: AccountDetails,
-      path: '/pages/verifications/user',
+      path: '/verifications/user',
       // openInNewTab: true
     },
     {
       title: 'Verify',
       icon: AccountCheckOutline,
-      path: '/pages/verifications/user/verify',
+      path: '/verifications/user/verify',
       // openInNewTab: true
     },
     {
