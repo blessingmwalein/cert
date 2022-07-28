@@ -83,17 +83,15 @@ const UserLayout = ({ children }: Props) => {
   useEffect(() => {
     // checks if the user is authenticated
 
-
     const returnUrl: string = router.query.returnUrl || '/';
     // console.log(getNavigationFromRole());
-
-    isUserAuthenticated()
-      ? router.push(returnUrl)
-      : router.push("/pages/login");
-
-    if (localStorage) {
-      var userData = decodeToken();
-      setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) })
+    if (isUserAuthenticated()) {
+      if (localStorage) {
+        var userData = decodeToken();
+        setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) })
+      }
+    } else {
+      router.push("/pages/login");
     }
   }, []);
 
