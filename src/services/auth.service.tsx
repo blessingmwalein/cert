@@ -3,7 +3,7 @@ import axios from 'axios';
 import { LoginRequest, RefreshTokenRequest, RegisterRequest, PasswordResetRequest } from 'src/models/auth/auth-request';
 import { ResponseEntity } from 'src/models/response-entity';
 
-const baseUrl = `http://apis.us-east-2.elasticbeanstalk.com/api/auth`;
+const baseUrl = `${process.env.API_BASE_URL}auth`;
 
 export const authService = {
     login,
@@ -17,7 +17,7 @@ async function login(loginRequest: LoginRequest): Promise<any> {
     const url = `${baseUrl}/login`;
     const response = await axios.post(url, loginRequest);
     const { data } = response;
-    sessionStorage.setItem('authData', JSON.stringify(data));
+    localStorage.setItem('authData', JSON.stringify(data));
     return data;
 }
 

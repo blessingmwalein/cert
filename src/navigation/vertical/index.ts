@@ -11,48 +11,59 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 
 // ** Type import
+import AccountDetails from 'mdi-material-ui/AccountDetails';
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
+import AccountCheckOutline from 'mdi-material-ui/AccountCheckOutline';
+import AccountCashOutline from 'mdi-material-ui/AccountCashOutline';
+import CurrencyUsd from 'mdi-material-ui/CurrencyUsd';
+import AccountEditOutline from 'mdi-material-ui/AccountEditOutline';
+import AccountDetailsOutline from 'mdi-material-ui/AccountDetailsOutline';
 
-const navigation = (): VerticalNavItemsType => {
+const roleUserNavigation = (): VerticalNavItemsType => {
   return [
     {
       title: 'Dashboard',
       icon: HomeOutline,
       path: '/'
     },
+
+    {
+      sectionTitle: 'Verifications'
+    },
+    {
+      title: 'User Verifications',
+      icon: AccountDetails,
+      path: '/pages/verifications/user',
+      // openInNewTab: true
+    },
+    {
+      title: 'Verify',
+      icon: AccountCheckOutline,
+      path: '/pages/verifications/user/verify',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Payments'
+    },
+    {
+      title: 'Balance',
+      icon: AccountCashOutline,
+      path: '/pages/payments',
+      // openInNewTab: true
+    },
+    {
+      title: 'Payment',
+      icon: CurrencyUsd,
+      path: '/pages/payments/send',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Security'
+    },
     {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'
-    },
-    {
-      sectionTitle: 'Pages'
-    },
-    {
-      title: 'Login',
-      icon: Login,
-      path: '/pages/login',
-      // openInNewTab: true
-    },
-    {
-      title: 'Register',
-      icon: AccountPlusOutline,
-      path: '/pages/register',
-      // openInNewTab: true
-    },
-    {
-      title: 'Error',
-      icon: AlertCircleOutline,
-      path: '/pages/error',
-      // openInNewTab: true
-    },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
     },
     {
       title: 'Icons',
@@ -77,4 +88,156 @@ const navigation = (): VerticalNavItemsType => {
   ]
 }
 
-export default navigation
+
+const roleHolderNavigation = (): VerticalNavItemsType => {
+  return [
+    {
+      title: 'Dashboard',
+      icon: HomeOutline,
+      path: '/'
+    },
+
+    {
+      sectionTitle: 'Applications'
+    },
+    {
+      title: 'Apply',
+      icon: AccountDetailsOutline,
+      path: '/applications/holder/apply',
+      // openInNewTab: true
+    },
+    {
+      title: 'Update',
+      icon: AccountEditOutline,
+      path: '/applications/holder/update',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Payments'
+    },
+    {
+      title: 'Balance',
+      icon: AccountCashOutline,
+      path: '/payments',
+      // openInNewTab: true
+    },
+    {
+      title: 'Payment',
+      icon: CurrencyUsd,
+      path: '/payments/send',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Security'
+    },
+    {
+      title: 'Account Settings',
+      icon: AccountCogOutline,
+      path: '/account-settings'
+    },
+    {
+      title: 'Icons',
+      path: '/icons',
+      icon: GoogleCirclesExtended
+    },
+  ]
+}
+
+const roleAdminNavigation = (): VerticalNavItemsType => {
+  return [
+    {
+      title: 'Dashboard',
+      icon: HomeOutline,
+      path: '/'
+    },
+
+    {
+      sectionTitle: 'Applications'
+    },
+    {
+      title: 'All',
+      icon: AccountCheckOutline,
+      path: '/pages/applications/admin',
+      // openInNewTab: true
+    },
+    {
+      title: 'Approve',
+      icon: AccountCheckOutline,
+      path: '/pages/applications/admin/approve',
+      // openInNewTab: true
+    },
+    {
+      title: 'Reject',
+      icon: AccountCheckOutline,
+      path: '/pages/applications/admin/reject',
+      // openInNewTab: true
+    },
+    {
+      title: 'Institution Applications',
+      icon: AccountCheckOutline,
+      path: '/pages/applications/admin/institutions',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Certificates'
+    },
+    {
+      title: 'All',
+      icon: AccountCheckOutline,
+      path: '/pages/certificates/admin',
+      // openInNewTab: true
+    },
+    {
+      title: 'Approve',
+      icon: AccountCheckOutline,
+      path: '/pages/certificates/admin/create',
+      // openInNewTab: true
+    },
+    {
+      title: 'Reject',
+      icon: AccountCheckOutline,
+      path: '/pages/certificates/admin/reject',
+      // openInNewTab: true
+    },
+    {
+      title: 'Sign',
+      icon: AccountCheckOutline,
+      path: '/pages/certificates/admin/sign',
+      // openInNewTab: true
+    },
+    {
+      title: 'Update',
+      icon: AccountCheckOutline,
+      path: '/pages/certificates/admin/update',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Verifications'
+    },
+    {
+      title: 'All',
+      icon: AccountCheckOutline,
+      path: '/pages/verifications/admin',
+      // openInNewTab: true
+    },
+    {
+      title: 'Institution Verifications',
+      icon: AccountCheckOutline,
+      path: '/pages/verifications/admin/institution',
+      // openInNewTab: true
+    },
+
+    {
+      sectionTitle: 'Security'
+    },
+    {
+      title: 'Account Settings',
+      icon: AccountCogOutline,
+      path: '/account-settings'
+    },
+
+  ]
+}
+
+export { roleUserNavigation, roleHolderNavigation, roleAdminNavigation }
+

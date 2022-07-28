@@ -42,3 +42,19 @@ export interface LoginResponse {
     tokenType: string;
     expiryDuration: number;
 }
+
+export interface Role {
+    id: number;
+    role: string;
+    certHolderRole: boolean;
+}
+
+export interface User {
+    sub: string;
+    userId: number;
+    email: string;
+    username: string;
+    role: Role[];
+    iat: number;
+    exp: number;
+}

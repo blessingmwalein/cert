@@ -258,7 +258,6 @@ const RegisterPage = () => {
                 defaultValue='false'
                 id='form-layouts-separator-select'
                 labelId='form-layouts-separator-select-label'
-
               >
                 <MenuItem value='true'>Yes</MenuItem>
                 <MenuItem value='false'>No</MenuItem>

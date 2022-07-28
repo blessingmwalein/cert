@@ -1,17 +1,17 @@
 // ** React Imports
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-
+import jwt_decode from "jwt-decode";
 // ** Layout Imports
 // !Do not remove this Layout import
 import VerticalLayout from 'src/@core/layouts/VerticalLayout'
 
 // ** Navigation Imports
-import VerticalNavItems from 'src/navigation/vertical'
+import { roleUserNavigation, roleHolderNavigation, roleAdminNavigation } from 'src/navigation/vertical'
 
 // ** Component Import
 import UpgradeToProButton from './components/UpgradeToProButton'
@@ -21,27 +21,83 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 import { useSettings } from 'src/@core/hooks/useSettings'
 import router from 'next/router'
 import React from 'react'
-import { LoginResponse } from 'src/models/auth/auth-request'
+import { LoginResponse, User } from 'src/models/auth/auth-request'
+import { VerticalNavItemsType } from 'src/@core/layouts/types';
+import { AnyMessageParams } from 'yup/lib/types';
 
 interface Props {
   children: ReactNode
 }
 
+interface State {
+  userData: User,
+  navigation: VerticalNavItemsType
+}
 const UserLayout = ({ children }: Props) => {
   // ** Hooks
   const { settings, saveSettings } = useSettings()
+  const [values, setValues] = useState<State>({
+    userData: {
+      "sub": "",
+      "userId": 1,
+      "email": "",
+      "username": "",
+      "role": [
+        {
+          "id": 3,
+          "role": "",
+          "certHolderRole": false
+        }
+      ],
+      "iat": 0,
+      "exp": 0
+    },
+    navigation: roleAdminNavigation()
+  })
 
-  const isUserAuthenticated = (): LoginResponse => {
-    return JSON.parse(sessionStorage.getItem('authData') || '{}')
+  const isUserAuthenticated = (): string => {
+    var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    return authdata ? authdata.accessToken : "";
+  }
+
+  const decodeToken = (): User => {
+    var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const token = authdata.accessToken;
+    const decoded: User = jwt_decode(token);
+    return decoded;
+  }
+
+  const getNavigationFromRole = (userData: User): VerticalNavItemsType => {
+    if (userData.role[0].role === 'ROLE_USER') {
+      return roleUserNavigation();
+    } else if (userData.role[0].role === 'ROLE_HOLDER') {
+      return roleHolderNavigation();
+    } else if (userData.role[0].role === 'ROLE_ADMIN') {
+      return roleAdminNavigation();
+    }
+    else {
+      return roleUserNavigation();
+    }
   }
 
   useEffect(() => {
     // checks if the user is authenticated
+
+
     const returnUrl: string = router.query.returnUrl || '/';
-    isUserAuthenticated().accessToken
+    // console.log(getNavigationFromRole());
+
+    isUserAuthenticated()
       ? router.push(returnUrl)
       : router.push("/pages/login");
+
+    if (localStorage) {
+      var userData = decodeToken();
+      setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) })
+    }
   }, []);
+
+
   /**
    *  The below variable will hide the current layout menu at given screen size.
    *  The menu will be accessible from the Hamburger icon only (Vertical Overlay Menu).
@@ -52,27 +108,13 @@ const UserLayout = ({ children }: Props) => {
    */
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
-  const UpgradeToProImg = () => {
-    return (
-      <Box sx={{ mx: 'auto' }}>
-        <a
-          target='_blank'
-          rel='noreferrer'
-          href='https://themeselection.com/products/materio-mui-react-nextjs-admin-template/'
-        >
-          <img width={230} alt='upgrade to premium' src={`/images/misc/upgrade-banner-${settings.mode}.png`} />
-        </a>
-      </Box>
-    )
-  }
 
   return (
     <VerticalLayout
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
-      verticalNavItems={VerticalNavItems()} // Navigation Items
-      afterVerticalNavMenuContent={UpgradeToProImg}
+      verticalNavItems={values.navigation} // Navigation Items
       verticalAppBarContent={(
         props // AppBar Content
       ) => (
@@ -81,13 +123,15 @@ const UserLayout = ({ children }: Props) => {
           settings={settings}
           saveSettings={saveSettings}
           toggleNavVisibility={props.toggleNavVisibility}
+          userData={values.userData}
         />
       )}
     >
       {children}
-      <UpgradeToProButton />
+      {/* <UpgradeToProButton /> */}
     </VerticalLayout>
   )
 }
 
 export default UserLayout
+

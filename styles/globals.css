@@ -27,7 +27,8 @@ code[class*='language-'] {
 
 #form-layouts-basic-password-helper,
 #email-helper-text,
-#username-helper-text {
+#username-helper-text,
+.MuiFormHelperText-contained {
   color: red !important;
   /* font-weight: bold; */
 }

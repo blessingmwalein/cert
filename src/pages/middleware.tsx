@@ -5,7 +5,7 @@ import { LoginResponse } from "src/models/auth/auth-request"
 
 
 const getAuthDetails = (): LoginResponse => {
-    return JSON.parse(sessionStorage.getItem('authData') || '{}')
+    return JSON.parse(localStorage.getItem('authData') || '{}')
 }
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
     // return early if url isn"t supposed to be protected
