@@ -70,7 +70,7 @@ const UserLayout = ({ children }: Props) => {
     return decoded;
   }
 
-  const  getBalanceValue = (balanceRequest: BalanceRequest): any => {
+  const getBalanceValue = (balanceRequest: BalanceRequest): any => {
     return paymentService.balance(balanceRequest).then((data) => {
       console.log(data);
       setValues({ ...values, balanceData: data, loading: false })
@@ -98,7 +98,7 @@ const UserLayout = ({ children }: Props) => {
 
   useEffect(() => {
     // checks if the user is authenticated
-    const returnUrl: string = router.query.returnUrl || '/';
+    // const returnUrl: string = router.query.returnUrl || '/';
     // console.log(getNavigationFromRole());
     if (isUserAuthenticated()) {
       if (localStorage) {
@@ -129,8 +129,7 @@ const UserLayout = ({ children }: Props) => {
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
-      verticalNavItems={values.navigation}
-      balanceData={values.balanceData} // Navigation Items
+      verticalNavItems={values.navigation}// Navigation Items
       verticalAppBarContent={(
         props // AppBar Content
       ) => (
