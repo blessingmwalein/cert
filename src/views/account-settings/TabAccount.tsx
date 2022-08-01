@@ -53,7 +53,7 @@ const TabAccount = () => {
 
   useEffect(() => {
     if (localStorage) {
-      var userData = authService.decodeToken();
+      let userData = authService.decodeToken();
       console.log(userData);
       setValues({ ...values, userDetails: userData });
       setValue('email', userData.email, { shouldValidate: true })

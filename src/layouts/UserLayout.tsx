@@ -1,20 +1,15 @@
 // ** React Imports
 import { ReactNode, useEffect, useState } from 'react'
 
-// ** MUI Imports
-import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import jwt_decode from "jwt-decode";
-// ** Layout Imports
-// !Do not remove this Layout import
 import VerticalLayout from 'src/@core/layouts/VerticalLayout'
 
 // ** Navigation Imports
 import { roleUserNavigation, roleHolderNavigation, roleAdminNavigation } from 'src/navigation/vertical'
 
 // ** Component Import
-import UpgradeToProButton from './components/UpgradeToProButton'
 import VerticalAppBarContent from './components/vertical/AppBarContent'
 
 // ** Hook Import
@@ -23,9 +18,8 @@ import router from 'next/router'
 import React from 'react'
 import { LoginResponse, User } from 'src/models/auth/auth-request'
 import { VerticalNavItemsType } from 'src/@core/layouts/types';
-import { AnyMessageParams } from 'yup/lib/types';
-import { paymentService } from '../services/payment-service';
 import { BalanceRequest, BalanceResponse } from '../models/payments/payment-request';
+import { paymentService } from 'src/services/payment-service';
 
 interface Props {
   children: ReactNode

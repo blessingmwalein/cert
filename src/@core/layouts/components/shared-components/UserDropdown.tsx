@@ -17,11 +17,8 @@ import Typography from '@mui/material/Typography'
 // ** Icons Imports
 import CogOutline from 'mdi-material-ui/CogOutline'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import { User } from 'src/models/auth/auth-request'
 import { BalanceResponse } from 'src/models/payments/payment-request'
 
@@ -138,7 +135,7 @@ const UserDropdown = (props: Props) => {
         </MenuItem>
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>
-            <CurrencyUsd sx={{ marginRight: 2 }} /> {balanceData.amount} {" "}
+            <CurrencyUsd sx={{ marginRight: 2 }} /> {balanceData.balance} {" "}
             Balance
           </Box>
         </MenuItem>

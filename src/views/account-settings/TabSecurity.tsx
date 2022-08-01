@@ -130,7 +130,7 @@ const TabSecurity = () => {
 
   useEffect(() => {
     if (localStorage) {
-      var userData = authService.decodeToken();
+      let userData = authService.decodeToken();
       console.log(userData);
       setValues({ ...values, userDetails: userData });
     }
