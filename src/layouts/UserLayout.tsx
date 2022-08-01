@@ -7,7 +7,7 @@ import jwt_decode from "jwt-decode";
 import VerticalLayout from 'src/@core/layouts/VerticalLayout'
 
 // ** Navigation Imports
-import { roleUserNavigation, roleHolderNavigation, roleAdminNavigation } from 'src/navigation/vertical'
+import { roleUserNavigation, roleHolderNavigation, roleAdminNavigation, roleRegisterNavigation } from 'src/navigation/vertical'
 
 // ** Component Import
 import VerticalAppBarContent from './components/vertical/AppBarContent'
@@ -26,7 +26,6 @@ interface Props {
 }
 
 interface State {
-  userData: User,
   navigation: VerticalNavItemsType,
   balanceData: BalanceResponse,
   loading: boolean
@@ -35,21 +34,6 @@ const UserLayout = ({ children }: Props) => {
   // ** Hooks
   const { settings, saveSettings } = useSettings()
   const [values, setValues] = useState<State>({
-    userData: {
-      "sub": "",
-      "userId": 1,
-      "email": "",
-      "username": "",
-      "role": [
-        {
-          "id": 3,
-          "role": "",
-          "certHolderRole": false
-        }
-      ],
-      "iat": 0,
-      "exp": 0
-    },
     navigation: roleAdminNavigation(),
     balanceData: {
       balance: 0,
@@ -57,6 +41,23 @@ const UserLayout = ({ children }: Props) => {
     },
     loading: true
   })
+  const [userData, setUserData] = useState<User>({
+    "sub": "",
+    "userId": 1,
+    "email": "",
+    "username": "",
+    "role": [
+      {
+        "id": 3,
+        "role": "",
+        "certHolderRole": false
+      }
+    ],
+    "iat": 0,
+    "exp": 0
+  },)
+
+  const [balanceData, setBalanceData] = useState<BalanceResponse>({})
 
   const isUserAuthenticated = (): string => {
     var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
@@ -71,9 +72,10 @@ const UserLayout = ({ children }: Props) => {
   }
 
   const getBalanceValue = (balanceRequest: BalanceRequest): any => {
-    return paymentService.balance(balanceRequest).then((data) => {
+    return paymentService.balance().then((data) => {
       console.log(data);
-      setValues({ ...values, balanceData: data, loading: false })
+      setBalanceData(data)
+      setValues({ ...values, loading: false });
 
     }).catch((error: any) => {
       console.log(error);
@@ -90,6 +92,8 @@ const UserLayout = ({ children }: Props) => {
       return roleHolderNavigation();
     } else if (userData.role[0].role === 'ROLE_ADMIN') {
       return roleAdminNavigation();
+    } else if (userData.role[0].role === 'ROLE_REGISTRAR') {
+      return roleRegisterNavigation();
     }
     else {
       return roleUserNavigation();
@@ -104,8 +108,9 @@ const UserLayout = ({ children }: Props) => {
       if (localStorage) {
         var userData = decodeToken();
         console.log(userData);
-        setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) });
-        // getBalanceValue({ userEmail: userData.email });
+        setUserData(userData);
+        setValues({ ...values, navigation: getNavigationFromRole(userData), loading: true });
+        getBalanceValue({ userEmail: userData.email });
       }
     } else {
       router.push("/pages/login");
@@ -124,7 +129,7 @@ const UserLayout = ({ children }: Props) => {
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
 
-  return (
+  return !values.loading ? (
     <VerticalLayout
       hidden={hidden}
       settings={settings}
@@ -138,15 +143,15 @@ const UserLayout = ({ children }: Props) => {
           settings={settings}
           saveSettings={saveSettings}
           toggleNavVisibility={props.toggleNavVisibility}
-          userData={values.userData}
-          balanceData={values.balanceData}
+          userData={userData}
+          balanceData={balanceData}
         />
       )}
     >
       {children}
       {/* <UpgradeToProButton /> */}
     </VerticalLayout>
-  )
+  ) : (<div></div>)
 }
 
 export default UserLayout

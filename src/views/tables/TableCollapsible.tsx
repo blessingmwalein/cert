@@ -13,7 +13,8 @@ import TableCell from '@mui/material/TableCell'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import TableContainer from '@mui/material/TableContainer'
-
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 // ** Icons Imports
 import ChevronUp from 'mdi-material-ui/ChevronUp'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
@@ -122,9 +123,15 @@ const TableCollapsible = (props: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {verifications.map((verification: any) => (
+          {verifications.length > 0 ? verifications.map((verification: any) => (
             <Row key={verification.id} verification={verification} />
-          ))}
+          )) : (<Alert
+            severity='warning'
+            sx={{ '& a': { fontWeight: 400, width: '100%', textAlign: 'center' } }}
+          >
+            <AlertTitle>No certificates yet</AlertTitle>
+
+          </Alert>)}
         </TableBody>
       </Table>
     </TableContainer>

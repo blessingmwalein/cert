@@ -57,3 +57,10 @@ export interface User {
     iat: number;
     exp: number;
 }
+
+export interface CreateUserRequest {
+    email: string;
+    institution: string;
+    password: string;
+    registerAsRegistrar: boolean;
+}

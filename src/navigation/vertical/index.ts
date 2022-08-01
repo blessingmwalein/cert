@@ -18,6 +18,8 @@ import AccountCashOutline from 'mdi-material-ui/AccountCashOutline';
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd';
 import AccountEditOutline from 'mdi-material-ui/AccountEditOutline';
 import AccountDetailsOutline from 'mdi-material-ui/AccountDetailsOutline';
+import AccountAlertOutline from 'mdi-material-ui/AccountAlertOutline';
+import { Draw } from 'mdi-material-ui'
 
 const roleUserNavigation = (): VerticalNavItemsType => {
   return [
@@ -131,59 +133,47 @@ const roleAdminNavigation = (): VerticalNavItemsType => {
     },
     {
       title: 'All',
-      icon: AccountCheckOutline,
-      path: '/pages/applications/admin',
+      icon: AccountDetailsOutline,
+      path: '/applications/admin',
       // openInNewTab: true
     },
     {
       title: 'Approve',
       icon: AccountCheckOutline,
-      path: '/pages/applications/admin/approve',
+      path: '/applications/admin/approve',
       // openInNewTab: true
     },
     {
       title: 'Reject',
-      icon: AccountCheckOutline,
-      path: '/pages/applications/admin/reject',
+      icon: AccountAlertOutline,
+      path: '/applications/admin/reject',
       // openInNewTab: true
     },
-    {
-      title: 'Institution Applications',
-      icon: AccountCheckOutline,
-      path: '/pages/applications/admin/institutions',
-      // openInNewTab: true
-    },
+    // {
+    //   title: 'Institution Applications',
+    //   icon: AccountDetailsOutline,
+    //   path: '/applications/admin/institutions',
+    //   // openInNewTab: true
+    // },
     {
       sectionTitle: 'Certificates'
     },
     {
       title: 'All',
-      icon: AccountCheckOutline,
-      path: '/pages/certificates/admin',
+      icon: AccountDetailsOutline,
+      path: '/certificates/admin',
       // openInNewTab: true
     },
     {
-      title: 'Approve',
+      title: 'Create',
       icon: AccountCheckOutline,
-      path: '/pages/certificates/admin/create',
-      // openInNewTab: true
-    },
-    {
-      title: 'Reject',
-      icon: AccountCheckOutline,
-      path: '/pages/certificates/admin/reject',
-      // openInNewTab: true
-    },
-    {
-      title: 'Sign',
-      icon: AccountCheckOutline,
-      path: '/pages/certificates/admin/sign',
+      path: '/certificates/admin/create',
       // openInNewTab: true
     },
     {
       title: 'Update',
-      icon: AccountCheckOutline,
-      path: '/pages/certificates/admin/update',
+      icon: AccountEditOutline,
+      path: '/certificates/admin/update',
       // openInNewTab: true
     },
     {
@@ -192,13 +182,107 @@ const roleAdminNavigation = (): VerticalNavItemsType => {
     {
       title: 'All',
       icon: AccountCheckOutline,
-      path: '/pages/verifications/admin',
+      path: '/verifications/admin',
+      // openInNewTab: true
+    },
+    // {
+    //   title: 'Institution Verifications',
+    //   icon: AccountCheckOutline,
+    //   path: '/verifications/admin/institution',
+    //   // openInNewTab: true
+    // },
+
+    {
+      sectionTitle: 'Security'
+    },
+    {
+      title: 'Account Settings',
+      icon: AccountCogOutline,
+      path: '/account-settings'
+    },
+    {
+      title: 'Create User',
+      icon: AccountPlusOutline,
+      path: '/create-user'
+    },
+
+  ]
+}
+const roleRegisterNavigation = (): VerticalNavItemsType => {
+  return [
+    {
+      title: 'Dashboard',
+      icon: HomeOutline,
+      path: '/'
+    },
+
+    {
+      sectionTitle: 'Applications'
+    },
+    // {
+    //   title: 'All',
+    //   icon: AccountDetailsOutline,
+    //   path: '/applications/admin',
+    //   // openInNewTab: true
+    // },
+    {
+      title: 'Approve',
+      icon: AccountCheckOutline,
+      path: '/applications/admin/approve',
       // openInNewTab: true
     },
     {
+      title: 'Reject',
+      icon: AccountAlertOutline,
+      path: '/applications/admin/reject',
+      // openInNewTab: true
+    },
+    {
+      title: 'Institution Applications',
+      icon: AccountDetailsOutline,
+      path: '/applications/admin/institution',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Certificates'
+    },
+    // {
+    //   title: 'All',
+    //   icon: AccountDetailsOutline,
+    //   path: '/certificates/admin',
+    //   // openInNewTab: true
+    // },
+    {
+      title: 'Create',
+      icon: AccountCheckOutline,
+      path: '/certificates/admin/create',
+      // openInNewTab: true
+    },
+    {
+      title: 'Update',
+      icon: AccountEditOutline,
+      path: '/certificates/admin/update',
+      // openInNewTab: true
+    },
+    {
+      title: 'Institution Applications',
+      icon: AccountDetailsOutline,
+      path: '/certificates/admin/institution',
+      // openInNewTab: true
+    },
+    {
+      sectionTitle: 'Verifications'
+    },
+    // {
+    //   title: 'All',
+    //   icon: AccountCheckOutline,
+    //   path: '/verifications/admin',
+    //   // openInNewTab: true
+    // },
+    {
       title: 'Institution Verifications',
       icon: AccountCheckOutline,
-      path: '/pages/verifications/admin/institution',
+      path: '/verifications/admin/institution',
       // openInNewTab: true
     },
 
@@ -214,5 +298,5 @@ const roleAdminNavigation = (): VerticalNavItemsType => {
   ]
 }
 
-export { roleUserNavigation, roleHolderNavigation, roleAdminNavigation }
+export { roleUserNavigation, roleHolderNavigation, roleAdminNavigation, roleRegisterNavigation }
 

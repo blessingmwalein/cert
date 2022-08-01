@@ -7,9 +7,74 @@ import { ApplicationRequest } from '../models/application/application-request';
 const baseUrl = `${process.env.API_BASE_URL}application`;
 
 export const applicationService = {
+    all,
     apply,
-    update
+    update,
+    approve,
+    institution,
+    reject
 };
+
+async function all(): Promise<any> {
+    const url = `${baseUrl}/all`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.get(
+        url,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
+    const { data } = response;
+    return data;
+}
+
+async function approve(applicationRequest: ApplicationRequest): Promise<any> {
+    const url = `${baseUrl}/approve`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.put(
+        url,
+        applicationRequest,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
+    const { data } = response;
+    return data;
+}
+async function reject(applicationRequest: ApplicationRequest): Promise<any> {
+    const url = `${baseUrl}/reject`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.put(
+        url,
+        applicationRequest,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
+    const { data } = response;
+    return data;
+}
+
+async function institution(): Promise<any> {
+    const url = `${baseUrl}/institution`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.get(
+        url,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
+    const { data } = response;
+    return data;
+}
 
 async function apply(loginRequest: ApplicationRequest): Promise<any> {
     const url = `${baseUrl}/apply`;

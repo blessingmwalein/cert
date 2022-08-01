@@ -31,10 +31,8 @@ interface State {
 }
 
 
-
 const PaymentStatus = () => {
     const router = useRouter()
-    const { id } = router.query
 
     const [values, setValues] = useState<State>({
         message: '',
@@ -47,8 +45,9 @@ const PaymentStatus = () => {
             total: 0
         }
     })
-    const confirmPayment = (id: number): any => {
-        return paymentService.confirmPayment({ id: id }).then((data) => {
+    const confirmPayment = (): any => {
+        const { id } = router.query
+        return paymentService.confirmPayment(22).then((data) => {
             console.log(data);
             setValues({ ...values, paymentStatus: data, loading: false })
 
@@ -58,13 +57,13 @@ const PaymentStatus = () => {
     }
 
     useEffect(() => {
-        confirmPayment(id);
+        confirmPayment();
     }, []);
 
     return (
         <Grid container spacing={6}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-                <Typography variant='h5'>Payment status for order {id}</Typography>
+                <Typography variant='h5'>Payment status for order 7</Typography>
             </Grid>
 
 

@@ -16,12 +16,12 @@ export const paymentService = {
     getHistory
 };
 
-async function balance(balanceRequest: BalanceRequest): Promise<any> {
+async function balance(): Promise<any> {
     const url = `${baseUrl}/balance`;
     const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
     const response = await axios.post(
         url,
-        balanceRequest,
+        {userEmail: authService.decodeToken().email},
         {
             headers: {
                 "Authorization": `Bearer ${authData.accessToken}`
@@ -50,12 +50,13 @@ async function send(paymentRequest: PaymentRequest): Promise<any> {
     return data;
 }
 
-async function confirmPayment(confirmPaymentRequest:any) : Promise<any> {
+async function confirmPayment(id: number): Promise<any> {
     const url = `${baseUrl}/confirm/payment`;
+    console.log('Id iyo' + id)
     const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
     const response = await axios.post(
         url,
-        confirmPaymentRequest,
+        { id: id },
         {
             headers: {
                 "Authorization": `Bearer ${authData.accessToken}`
@@ -66,12 +67,12 @@ async function confirmPayment(confirmPaymentRequest:any) : Promise<any> {
     return data;
 }
 
-async function getHistory(){
+async function getHistory() {
     const url = `${baseUrl}/history`;
     const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
     const response = await axios.post(
         url,
-        {userEmail: authService.decodeToken().email},
+        { userEmail: authService.decodeToken().email },
         {
             headers: {
                 "Authorization": `Bearer ${authData.accessToken}`
