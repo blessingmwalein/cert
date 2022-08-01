@@ -42,7 +42,6 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { VerifyRequest } from 'src/models/application/application-request'
-import { VerifyRequest } from 'src/models/verification/verification-request'
 import { verificationService } from 'src/services/verification-service'
 // import { applicationService } from 'src/services/application.service'
 
