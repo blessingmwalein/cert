@@ -24,6 +24,8 @@ import React from 'react'
 import { LoginResponse, User } from 'src/models/auth/auth-request'
 import { VerticalNavItemsType } from 'src/@core/layouts/types';
 import { AnyMessageParams } from 'yup/lib/types';
+import { paymentService } from '../services/payment-service';
+import { BalanceRequest, BalanceResponse } from '../models/payments/payment-request';
 
 interface Props {
   children: ReactNode
@@ -31,7 +33,9 @@ interface Props {
 
 interface State {
   userData: User,
-  navigation: VerticalNavItemsType
+  navigation: VerticalNavItemsType,
+  balanceData: BalanceResponse,
+  loading: boolean
 }
 const UserLayout = ({ children }: Props) => {
   // ** Hooks
@@ -52,7 +56,12 @@ const UserLayout = ({ children }: Props) => {
       "iat": 0,
       "exp": 0
     },
-    navigation: roleAdminNavigation()
+    navigation: roleAdminNavigation(),
+    balanceData: {
+      balance: 0,
+      userEmail: ""
+    },
+    loading: true
   })
 
   const isUserAuthenticated = (): string => {
@@ -67,7 +76,20 @@ const UserLayout = ({ children }: Props) => {
     return decoded;
   }
 
+  const  getBalanceValue = (balanceRequest: BalanceRequest): any => {
+    return paymentService.balance(balanceRequest).then((data) => {
+      console.log(data);
+      setValues({ ...values, balanceData: data, loading: false })
+
+    }).catch((error: any) => {
+      console.log(error);
+    })
+  }
+
+
   const getNavigationFromRole = (userData: User): VerticalNavItemsType => {
+    console.log(userData.role[0].role)
+
     if (userData.role[0].role === 'ROLE_USER') {
       return roleUserNavigation();
     } else if (userData.role[0].role === 'ROLE_HOLDER') {
@@ -87,7 +109,9 @@ const UserLayout = ({ children }: Props) => {
     if (isUserAuthenticated()) {
       if (localStorage) {
         var userData = decodeToken();
-        setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) })
+        console.log(userData);
+        setValues({ ...values, userData: userData, navigation: getNavigationFromRole(userData) });
+        // getBalanceValue({ userEmail: userData.email });
       }
     } else {
       router.push("/pages/login");
@@ -111,7 +135,8 @@ const UserLayout = ({ children }: Props) => {
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
-      verticalNavItems={values.navigation} // Navigation Items
+      verticalNavItems={values.navigation}
+      balanceData={values.balanceData} // Navigation Items
       verticalAppBarContent={(
         props // AppBar Content
       ) => (
@@ -121,6 +146,7 @@ const UserLayout = ({ children }: Props) => {
           saveSettings={saveSettings}
           toggleNavVisibility={props.toggleNavVisibility}
           userData={values.userData}
+          balanceData={values.balanceData}
         />
       )}
     >

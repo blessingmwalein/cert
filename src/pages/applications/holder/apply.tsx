@@ -50,9 +50,7 @@ interface State {
     loading: boolean
 }
 
-const CustomInput = forwardRef((props, ref) => {
-    return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
-})
+
 
 const schema = Yup.object().shape({
     userEmail: Yup.string().email().required(),
@@ -60,7 +58,6 @@ const schema = Yup.object().shape({
     nationalId: Yup.string().required(),
     program: Yup.string().required(),
     regNumber: Yup.string().required(),
-
 }).required();
 
 

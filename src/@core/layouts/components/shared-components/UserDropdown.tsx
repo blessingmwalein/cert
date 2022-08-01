@@ -23,6 +23,7 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import { User } from 'src/models/auth/auth-request'
+import { BalanceResponse } from 'src/models/payments/payment-request'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -34,22 +35,19 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 interface Props {
-  userData: User
+  userData: User,
+  balanceData: BalanceResponse
 }
 
 const UserDropdown = (props: Props) => {
   // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
-
-  const { userData } = props
-
+  const { userData, balanceData } = props
   // ** Hooks
   const router = useRouter()
-
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
   }
-
   const handleDropdownClose = (url?: string) => {
     if (url) {
       router.push(url)
@@ -140,8 +138,8 @@ const UserDropdown = (props: Props) => {
         </MenuItem>
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>
-            <CurrencyUsd sx={{ marginRight: 2 }} /> 0.00
-            Balance 
+            <CurrencyUsd sx={{ marginRight: 2 }} /> {balanceData.amount} {" "}
+            Balance
           </Box>
         </MenuItem>
         {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>

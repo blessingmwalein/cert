@@ -41,7 +41,9 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ApplicationRequest } from 'src/models/application/application-request'
+import { VerifyRequest } from 'src/models/application/application-request'
+import { VerifyRequest } from 'src/models/verification/verification-request'
+import { verificationService } from 'src/services/verification-service'
 // import { applicationService } from 'src/services/application.service'
 
 interface State {
@@ -55,12 +57,10 @@ const CustomInput = forwardRef((props, ref) => {
 })
 
 const schema = Yup.object().shape({
-    certificateId: Yup.string().email().required(),
+    certificateId: Yup.string().required(),
     institution: Yup.string().required(),
     nationalId: Yup.string().required(),
-    program: Yup.string().required(),
-    regNumber: Yup.string().required(),
-
+    verifier: Yup.string().required(),
 }).required();
 
 
@@ -73,24 +73,20 @@ const Verify = () => {
         loading: false
     })
 
-    const { register, handleSubmit, setError, formState: { errors }, resetField } = useForm<ApplicationRequest>(
+    const { register, handleSubmit, setError, formState: { errors }, reset } = useForm<VerifyRequest>(
         {
             resolver: yupResolver(schema)
         }
     );
-    const onSubmit = handleSubmit((data: ApplicationRequest) => {
+    const onSubmit = handleSubmit((data: VerifyRequest) => {
         setValues({ ...values, message: "", error: "", loading: true })
         console.log(data)
 
-        return applicationService.apply(data).then((response) => {
+        return verificationService.verify(data).then((response) => {
             console.log(response);
-       
-            setValues({ ...values, message:`Application submitted ${response.applicationStatus}`, loading: false })
-            resetField('userEmail')
-            resetField('institution')
-            resetField('nationalId')
-            resetField('program')
-            resetField('regNumber')
+
+            setValues({ ...values, message: `Verification send`, loading: false })
+            reset()
         })
             .catch((error: any) => {
                 console.log(error);
@@ -133,14 +129,14 @@ const Verify = () => {
                                 <Grid container spacing={5}>
                                     <Grid item xs={12}>
                                         <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                                            1. Application Details
+                                            1. Certificate Details
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField fullWidth label='Reg Number' placeholder='R187437F' {...register('regNumber')} helperText={errors.regNumber && errors.regNumber?.message} />
+                                        <TextField fullWidth label='Certificate Id' placeholder='12121' {...register('certificateId')} helperText={errors.certificateId && errors.certificateId?.message} />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField fullWidth type='email' label='Email' placeholder='bmwale@gmail.com' {...register('userEmail')} helperText={errors.userEmail && errors.userEmail?.message} />
+                                        <TextField fullWidth type='email' label='Verifier' placeholder='bmwale@gmail.com' {...register('verifier')} helperText={errors.verifier && errors.verifier?.message} />
                                     </Grid>
 
                                     <Grid item xs={12}>
@@ -158,25 +154,7 @@ const Verify = () => {
                                         </FormHelperText>
                                     </Grid>
 
-                                    <Grid item xs={12} sm={12}>
-                                        <TextField
-                                            fullWidth
-                                            multiline
-                                            minRows={2}
-                                            helperText={errors.program && errors.program?.message}
-                                            label='Programme'
-                                            placeholder='Programme...'
-                                            {...register('program')}
-                                            sx={{ '& .MuiOutlinedInput-root': { alignItems: 'baseline' } }}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position='start'>
-                                                        <MessageOutline />
-                                                    </InputAdornment>
-                                                )
-                                            }}
-                                        />
-                                    </Grid>
+
                                     <Grid item xs={12} sm={12}>
                                         <FormControl fullWidth {...register('institution')}>
                                             <InputLabel id='form-layouts-separator-select-label'>Institution</InputLabel>
@@ -203,7 +181,7 @@ const Verify = () => {
                             <Divider sx={{ margin: 0 }} />
                             <CardActions>
                                 <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained' disabled={values.loading}>
-                                {values.loading ? 'Applying...' : 'Apply'}
+                                    {values.loading ? 'Verifying...' : 'Verify'}
                                 </Button>
                                 <Button size='large' color='secondary' variant='outlined'>
                                     Cancel

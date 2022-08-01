@@ -25,9 +25,8 @@ export interface RefreshTokenRequest {
 }
 
 export interface PasswordResetRequest {
-    confirmPassword: string;
-    password: string;
-    token: string;
+    newPassword: string;
+    oldPassword: string;
 }
 
 

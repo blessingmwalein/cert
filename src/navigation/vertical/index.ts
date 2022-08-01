@@ -48,13 +48,13 @@ const roleUserNavigation = (): VerticalNavItemsType => {
     {
       title: 'Balance',
       icon: AccountCashOutline,
-      path: '/pages/payments',
+      path: '/payments',
       // openInNewTab: true
     },
     {
       title: 'Payment',
       icon: CurrencyUsd,
-      path: '/pages/payments/send',
+      path: '/payments/send',
       // openInNewTab: true
     },
     {
@@ -65,26 +65,6 @@ const roleUserNavigation = (): VerticalNavItemsType => {
       icon: AccountCogOutline,
       path: '/account-settings'
     },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
-    }
   ]
 }
 
@@ -134,11 +114,6 @@ const roleHolderNavigation = (): VerticalNavItemsType => {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
     },
   ]
 }

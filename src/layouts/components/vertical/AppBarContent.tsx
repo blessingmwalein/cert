@@ -18,18 +18,20 @@ import ModeToggler from 'src/@core/layouts/components/shared-components/ModeTogg
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
 import { User } from 'src/models/auth/auth-request'
+import { BalanceResponse } from 'src/models/payments/payment-request'
 
 interface Props {
   hidden: boolean
   settings: Settings
   toggleNavVisibility: () => void
   saveSettings: (values: Settings) => void,
-  userData: User
+  userData: User,
+  balanceData:BalanceResponse
 }
 
 const AppBarContent = (props: Props) => {
   // ** Props
-  const { hidden, settings, saveSettings, toggleNavVisibility, userData } = props
+  const { hidden, settings, saveSettings, toggleNavVisibility, userData, balanceData } = props
 
   // ** Hook
   const hiddenSm = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
@@ -61,7 +63,7 @@ const AppBarContent = (props: Props) => {
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         <NotificationDropdown />
-        <UserDropdown userData={userData} />
+        <UserDropdown userData={userData} balanceData={balanceData} />
       </Box>
     </Box>
   )

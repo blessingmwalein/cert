@@ -1,7 +1,8 @@
 import Router from 'next/router'
 import axios from 'axios';
-import { LoginRequest, RefreshTokenRequest, RegisterRequest, PasswordResetRequest } from 'src/models/auth/auth-request';
+import { LoginRequest, RefreshTokenRequest, RegisterRequest, PasswordResetRequest, LoginResponse, User } from 'src/models/auth/auth-request';
 import { ResponseEntity } from 'src/models/response-entity';
+import jwt_decode from "jwt-decode";
 
 const baseUrl = `${process.env.API_BASE_URL}auth`;
 
@@ -10,7 +11,8 @@ export const authService = {
     register,
     refreshToken,
     passwordReset,
-    sendResetLink
+    sendResetLink,
+    decodeToken
 };
 
 async function login(loginRequest: LoginRequest): Promise<any> {
@@ -40,7 +42,7 @@ async function refreshToken(refreshTokenRequest: RefreshTokenRequest): Promise<R
 }
 
 async function passwordReset(passwordResetRequest: PasswordResetRequest): Promise<ResponseEntity> {
-    const url = `${baseUrl}/password/reset`;
+    const url = `${baseUrl}/password/update?email=${decodeToken().email}`;
     const response = await axios.post(url, passwordResetRequest);
     const { data } = response;
     return data;
@@ -59,4 +61,9 @@ async function resendConfirmationToken(email: string): Promise<ResponseEntity> {
     return data;
 }
 
-
+function decodeToken(): User {
+    var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const token = authdata.accessToken;
+    const decoded: User = jwt_decode(token);
+    return decoded;
+}
