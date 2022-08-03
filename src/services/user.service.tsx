@@ -4,6 +4,7 @@ import Router from 'next/router'
 import axios from 'axios';
 import { CreateUserRequest, DeviceInfo, LoginRequest, LoginResponse, RefreshTokenRequest, RegisterRequest, UpdatePasswordRequest } from 'src/models/auth/auth-request';
 import { ResponseEntity } from 'src/models/response-entity';
+import { authService } from './auth.service';
 
 const baseUrl = `${process.env.API_BASE_URL}user`;
 
@@ -45,10 +46,18 @@ async function getUser(): Promise<ResponseEntity> {
     return data;
 }
 
-async function updatePassword(updatePasswordRequest: UpdatePasswordRequest, email: string): Promise<ResponseEntity> {
-    const url = `${baseUrl}/password/update?email=${email}`;
-    const response = await axios.post(url, updatePasswordRequest);
+async function updatePassword(updatePasswordRequest: UpdatePasswordRequest): Promise<ResponseEntity> {
+    const url = `${baseUrl}/password/update?email=${authService.decodeToken().email}`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.post(
+        url,
+        updatePasswordRequest,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
     const { data } = response;
     return data;
 }
-

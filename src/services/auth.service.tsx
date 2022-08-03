@@ -12,7 +12,9 @@ export const authService = {
     refreshToken,
     passwordReset,
     sendResetLink,
-    decodeToken
+    decodeToken,
+    clearLocalStorage,
+    logout
 };
 
 async function login(loginRequest: LoginRequest): Promise<any> {
@@ -67,3 +69,14 @@ function decodeToken(): User {
     const decoded: User = jwt_decode(token);
     return decoded;
 }
+
+
+function logout() {
+    localStorage.removeItem('authData');
+    Router.push('/pages/login');
+}
+
+function clearLocalStorage() {
+    localStorage.removeItem('authData');
+}
+

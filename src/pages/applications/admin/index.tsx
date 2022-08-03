@@ -18,9 +18,16 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import { applicationService } from 'src/services/application.service'
 import { useEffect, useState, ChangeEvent } from 'react'
+import Button from '@mui/material/Button'
+import { ApplicationRequest } from 'src/models/application/application-request'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 interface Column {
-    id: 'id' | 'userEmail' | 'regNumber' | 'program' | 'nationalId' | 'institution' | 'createdAt' | 'applicationStatus',
+    id: 'userEmail' | 'actions' | 'regNumber' | 'program' | 'nationalId' | 'institution' | 'createdAt' | 'applicationStatus',
     label: string
     minWidth?: number
     align?: 'right'
@@ -28,7 +35,7 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-    { id: 'id', label: 'Id', minWidth: 50 },
+
     { id: 'userEmail', label: 'User email', minWidth: 100 },
     {
         id: 'regNumber',
@@ -39,7 +46,7 @@ const columns: readonly Column[] = [
     {
         id: 'program',
         label: 'Program',
-        minWidth: 200,
+        minWidth: 100,
         format: (value: number) => value.toLocaleString('en-US')
     },
     {
@@ -52,6 +59,12 @@ const columns: readonly Column[] = [
         id: 'applicationStatus',
         label: 'Status',
         minWidth: 70,
+        format: (value: number) => value.toFixed(2)
+    },
+    {
+        id: 'actions',
+        label: 'Actions',
+        minWidth: 40,
         format: (value: number) => value.toFixed(2)
     }
 ]
@@ -77,7 +90,10 @@ const All = () => {
     })
     const [page, setPage] = useState<number>(0)
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
-    const [applications , setApplication] = useState<any>([]);
+    const [applications, setApplication] = useState<any>([]);
+    const [open, setOpen] = useState(false);
+    const [openReject, setOpenReject] = useState(false);
+
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage)
@@ -88,83 +104,193 @@ const All = () => {
         setPage(0)
     }
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleClickOpenReject = () => {
+        setOpenReject(true);
+    };
+
+    const handleCloseReject = () => {
+        setOpenReject(false);
+    };
+
     const getApplications = () => {
-        return applicationService.all().then((data:any) => {
+        return applicationService.all().then((data: any) => {
             setApplication(data);
             setValues({ ...values, message: '', error: '', loading: false })
-
         }).catch((error: any) => {
             console.log(error);
             setValues({ ...values, message: '', error: error.message, loading: false })
-
         })
     }
+
+    const approve = (data: ApplicationRequest) => {
+        setValues({ ...values, message: "", error: "", loading: true })
+        console.log(data)
+
+        return applicationService.approve(data).then((response: any) => {
+            console.log(response);
+            setValues({ ...values, message: `Application approved ${response.applicationStatus}`, loading: false })
+            handleClose()
+            setTimeout(() => {
+                getApplications();
+            }, 3000);
+        })
+            .catch((error: any) => {
+                console.log(error);
+                setValues({ ...values, error: error.response?.data?.message, loading: false })
+            })
+    }
+
+    const reject = (data: ApplicationRequest) => {
+        setValues({ ...values, message: "", error: "", loading: true })
+        console.log(data)
+        return applicationService.reject(data).then((response: any) => {
+            console.log(response);
+            setValues({ ...values, message: `Application rejected ${response.applicationStatus}`, loading: false })
+            handleCloseReject()
+            setTimeout(() => {
+                getApplications();
+            }, 3000);
+        })
+            .catch((error: any) => {
+                console.log(error);
+                setValues({ ...values, error: error.response?.data?.message, loading: false })
+            })
+    };
+
 
     useEffect(() => {
         getApplications();
     }, []);
 
     return (
-        <Grid container spacing={6}>
-            
+        <><Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                {"Approve this application"}
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to approve this application
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose}>Disagree</Button>
+                <Button onClick={() => approve(row)} autoFocus>
+                    Agree
+                </Button>
+            </DialogActions>
+        </Dialog><Dialog
+            open={openReject}
+            onClose={handleCloseReject}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+                <DialogTitle id="alert-dialog-title">
+                    {"Reject this application"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to reject this application
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseReject}>Disagree</Button>
+                    <Button onClick={() => reject(row)} autoFocus>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog><Grid container spacing={6}>
 
-            <Grid item xs={12}>
-                <Card>
-                    <CardHeader title='All applications' titleTypographyProps={{ variant: 'h6' }} />
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        <TableContainer sx={{ maxHeight: 440 }}>
-                            <Table stickyHeader aria-label='sticky table'>
-                                <TableHead>
-                                    <TableRow>
-                                        {columns.map(column => (
-                                            <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                                                {column.label}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    { applications.length > 0? applications.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row :any) => {
-                                        return (
-                                            <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                                                {columns.map(column => {
-                                                    const value = row[column.id]
 
-                                                    return (
-                                                        <TableCell key={column.id} align={column.align}>
-                                                            {column.format && typeof value === 'number' ? column.format(value) : value}
-                                                        </TableCell>
-                                                        
-                                                    )
-                                                })}
+                <Grid item xs={12}>
+                    <Card>
+                        <CardHeader title='All applications' titleTypographyProps={{ variant: 'h6' }} />
+                        {values.message ? <Alert
 
-                                            </TableRow>
-                                            
-                                        )
-                                    }) : (<Alert
+                            severity='success'
+                            sx={{ '& a': { fontWeight: 400 } }}
+                        >
+                            <AlertTitle>{values.message}</AlertTitle>
+                        </Alert> : ''}
 
-                                        severity='warning'
-                                        sx={{ '& a': { fontWeight: 400 } }}
-                                    >
-                                        <AlertTitle>No applications yet</AlertTitle>
-        
-                                    </Alert> )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25, 100]}
-                            component='div'
-                            count={applications.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </Paper>
-                </Card>
-            </Grid>
-        </Grid>
+                        {values.error ? <Alert
+
+                            severity='error'
+                            sx={{ '& a': { fontWeight: 400 } }}
+                        >
+                            <AlertTitle>{values.error}</AlertTitle>
+
+                        </Alert> : ''}
+                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                            <TableContainer sx={{ maxHeight: 440 }}>
+                                <Table stickyHeader aria-label='sticky table'>
+                                    <TableHead>
+                                        <TableRow>
+                                            {columns.map(column => (
+                                                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                                                    {column.label}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {applications.length > 0 ? applications.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any) => {
+                                            return (
+                                                <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                                                    {columns.map(column => {
+                                                        const value = row[column.id]
+
+                                                        return column.id !== 'actions' ? (
+                                                            <TableCell key={column.id} align={column.align}>
+                                                                {column.format && typeof value === 'number' ? column.format(value) : value}
+                                                            </TableCell>
+
+                                                        ) : (
+                                                            <TableCell key={column.id} align={column.align}>
+                                                                <Button onClick={handleClickOpen} style={{ color: "blue", backgroundColor: '#F5F5F5', marginBottom: "2px" }}>Approve</Button>
+                                                                <Button onClick={handleClickOpenReject} style={{ color: "red", backgroundColor: '#F5F5F5' }}>Reject</Button>
+                                                            </TableCell>
+                                                        )
+                                                    })}
+
+                                                </TableRow>
+
+                                            )
+                                        }) : (<Alert
+
+                                            severity='warning'
+                                            sx={{ '& a': { fontWeight: 400 } }}
+                                        >
+                                            <AlertTitle>No applications yet</AlertTitle>
+
+                                        </Alert>)}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 25, 100]}
+                                component='div'
+                                count={applications.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage} />
+                        </Paper>
+                    </Card>
+                </Grid>
+            </Grid></>
     )
 }
 

@@ -5,6 +5,12 @@ import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import jwt_decode from "jwt-decode";
 import VerticalLayout from 'src/@core/layouts/VerticalLayout'
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 // ** Navigation Imports
 import { roleUserNavigation, roleHolderNavigation, roleAdminNavigation, roleRegisterNavigation } from 'src/navigation/vertical'
@@ -20,6 +26,9 @@ import { LoginResponse, User } from 'src/models/auth/auth-request'
 import { VerticalNavItemsType } from 'src/@core/layouts/types';
 import { BalanceRequest, BalanceResponse } from '../models/payments/payment-request';
 import { paymentService } from 'src/services/payment-service';
+import { authService } from '../services/auth.service';
+import { log } from 'console';
+
 
 interface Props {
   children: ReactNode
@@ -33,14 +42,19 @@ interface State {
 const UserLayout = ({ children }: Props) => {
   // ** Hooks
   const { settings, saveSettings } = useSettings()
-  const [values, setValues] = useState<State>({
-    navigation: roleAdminNavigation(),
-    balanceData: {
-      balance: 0,
-      userEmail: ""
-    },
-    loading: true
-  })
+  const [navigation, setNavigation] = useState<VerticalNavItemsType>([]);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    console.log("Token is expired");
+
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const [loading, setLoading] = useState<Boolean>(true)
   const [userData, setUserData] = useState<User>({
     "sub": "",
     "userId": 1,
@@ -57,26 +71,18 @@ const UserLayout = ({ children }: Props) => {
     "exp": 0
   },)
 
-  const [balanceData, setBalanceData] = useState<BalanceResponse>({})
+  const [balanceData, setBalanceData] = useState<any>({})
 
   const isUserAuthenticated = (): string => {
     var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
     return authdata ? authdata.accessToken : "";
   }
 
-  const decodeToken = (): User => {
-    var authdata: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
-    const token = authdata.accessToken;
-    const decoded: User = jwt_decode(token);
-    return decoded;
-  }
-
   const getBalanceValue = (balanceRequest: BalanceRequest): any => {
     return paymentService.balance().then((data) => {
       console.log(data);
       setBalanceData(data)
-      setValues({ ...values, loading: false });
-
+      setLoading(false);
     }).catch((error: any) => {
       console.log(error);
     })
@@ -93,6 +99,8 @@ const UserLayout = ({ children }: Props) => {
     } else if (userData.role[0].role === 'ROLE_ADMIN') {
       return roleAdminNavigation();
     } else if (userData.role[0].role === 'ROLE_REGISTRAR') {
+      console.log("ROLE_REGISTRAR zvaita");
+
       return roleRegisterNavigation();
     }
     else {
@@ -106,35 +114,65 @@ const UserLayout = ({ children }: Props) => {
     // console.log(getNavigationFromRole());
     if (isUserAuthenticated()) {
       if (localStorage) {
-        var userData = decodeToken();
-        console.log(userData);
-        setUserData(userData);
-        setValues({ ...values, navigation: getNavigationFromRole(userData), loading: true });
-        getBalanceValue({ userEmail: userData.email });
+        var userData = authService.decodeToken();
+        console.log(new Date().getTime());
+
+        if (new Date().getTime() < userData.exp * 1000) {
+          console.log(userData);
+          setUserData(userData);
+          setNavigation(getNavigationFromRole(userData));
+          getBalanceValue({ userEmail: userData.email });
+        } else {
+          // authService.clearLocalStorage();
+          // 
+          handleClickOpen()
+          setTimeout(() => {
+            router.push("/pages/login");
+          }
+            , 3000);
+        }
       }
     } else {
       router.push("/pages/login");
     }
   }, []);
 
-
   /**
    *  The below variable will hide the current layout menu at given screen size.
    *  The menu will be accessible from the Hamburger icon only (Vertical Overlay Menu).
    *  You can change the screen size from which you want to hide the current layout menu.
    *  Please refer useMediaQuery() hook: https://mui.com/components/use-media-query/,
-   *  to know more about what values can be passed to this hook.
+   *  to know more about what loading can be passed to this hook.
    *  ! Do not change this value unless you know what you are doing. It can break the template.
    */
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
-
-  return !values.loading ? (
-    <VerticalLayout
+  return !loading ? (
+    <><Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Session expired?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Your session has  expired you will be logged out in 10 seconds!
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Logout</Button>
+        <Button onClick={handleClose} autoFocus>
+          Refresh Token
+        </Button>
+      </DialogActions>
+    </Dialog><VerticalLayout
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
-      verticalNavItems={values.navigation}// Navigation Items
+      verticalNavItems={navigation} // Navigation Items
       verticalAppBarContent={(
         props // AppBar Content
       ) => (
@@ -144,13 +182,15 @@ const UserLayout = ({ children }: Props) => {
           saveSettings={saveSettings}
           toggleNavVisibility={props.toggleNavVisibility}
           userData={userData}
-          balanceData={balanceData}
-        />
+          balanceData={balanceData} />
       )}
     >
-      {children}
-      {/* <UpgradeToProButton /> */}
-    </VerticalLayout>
+        {children}
+        {/* <UpgradeToProButton /> */}
+
+      </VerticalLayout></>
+
+
   ) : (<div></div>)
 }
 

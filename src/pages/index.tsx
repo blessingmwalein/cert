@@ -21,78 +21,136 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
+import { useEffect, useState } from 'react'
+import { authService } from '../services/auth.service';
+import router from 'next/router'
+import { BalanceResponse } from 'src/models/payments/payment-request'
+import { paymentService } from 'src/services/payment-service'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Box, { BoxProps } from '@mui/material/Box'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+
 
 const Dashboard = () => {
+
+  const [userDetails, setUserDetails] = useState<any>({})
+
+  const [values, setValues] = useState<any>({
+    message: '',
+    error: '',
+    loading: true,
+    id: 0,
+    history: [
+    ]
+  })
+  const [history, setHistory] = useState<any>([]);
+  const [balanceData, setBalanceData] = useState<BalanceResponse>({});
+
+
+
+  const getPaymentHistory = (): any => {
+    return paymentService.getHistory().then((data) => {
+      console.log(data);
+      // setValues({ ...values, message: '', error: '', loading: false })
+      setHistory(data)
+      getBalance()
+    }).catch((error: any) => {
+      console.log(error);
+      setValues({ ...values, message: '', error: error.message, loading: false })
+    })
+  }
+
+  const getBalance = (): any => {
+    return paymentService.balance().then((data: any) => {
+      console.log(data);
+      setValues({ ...values, message: '', error: '', loading: false })
+      setBalanceData(data)
+    }).catch((error: any) => {
+      console.log(error);
+      setValues({ ...values, message: '', error: error.message, loading: false })
+    })
+
+  }
+  function getUser() {
+    const userDetails = authService.decodeToken()
+    setUserDetails(userDetails)
+    getPaymentHistory()
+  }
+
+
+  useEffect(() => {
+    getUser()
+  }
+    , [])
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
-        <Grid item xs={12} md={4}>
-          <Trophy />
+        <Grid item xs={12} md={12}>
+          <Trophy userDetails={userDetails} balanceData={balanceData} />
         </Grid>
-        <Grid item xs={12} md={8}>
-          <StatisticsCard />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <WeeklyOverview />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <TotalEarning />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <Grid container spacing={6}>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$25.6k'
-                icon={<Poll />}
-                color='success'
-                trendNumber='+42%'
-                title='Total Profit'
-                subtitle='Weekly Profit'
+        <Grid item sm={12} xs={12}
+        >
+          <Card sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: ['column', 'column', 'row'] }}>
+
+            <Box sx={{ width: '100%' }}>
+              <CardHeader
+                title='Payment History'
+                sx={{ pt: 5.5, alignItems: 'center', '& .MuiCardHeader-action': { mt: 0.6 } }}
+                action={<Typography variant='caption'>View All</Typography>}
+                titleTypographyProps={{
+                  variant: 'h6',
+                  sx: { lineHeight: '1.6 !important', letterSpacing: '0.15px !important' }
+                }}
               />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$78'
-                title='Refunds'
-                trend='negative'
-                color='secondary'
-                trendNumber='-15%'
-                subtitle='Past Month'
-                icon={<CurrencyUsd />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='862'
-                trend='negative'
-                trendNumber='-18%'
-                title='New Project'
-                subtitle='Yearly Project'
-                icon={<BriefcaseVariantOutline />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='15'
-                color='warning'
-                trend='negative'
-                trendNumber='-18%'
-                subtitle='Last Week'
-                title='Sales Queries'
-                icon={<HelpCircleOutline />}
-              />
-            </Grid>
-          </Grid>
+              {
+                !values.loading ?
+                  <CardContent sx={{ pb: theme => `${theme.spacing(5.5)} !important` }}>
+                    {
+                      history.map((item: any, index: number) => {
+                        return (
+                          <Box
+
+                            sx={{ display: 'flex', alignItems: 'center', mb: 6 }}
+                          >
+                            <Box sx={{ minWidth: 38, display: 'flex', justifyContent: 'center' }}>
+                              <img src='/images/logos/stripe.png' alt="Paynow" width="20" height="28" />
+                            </Box>
+                            <Box
+                              sx={{
+                                ml: 4,
+                                width: '100%',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                              }}
+                            >
+                              <Box sx={{ marginRight: 2, display: 'flex', flexDirection: 'column' }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Transaction #{item.id}</Typography>
+                                <Typography variant='caption'>Complete : {item.complete ? "Yes" : "Pending"}</Typography>
+                                <Typography variant='caption'>Poll Url : {item.pollURl}</Typography>
+                                <Typography variant='caption'>Date : {item.transactionDate}</Typography>
+                              </Box>
+                              <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'danger.main' }}>
+                                Amount : ZWL{item.amount}
+                              </Typography>
+                            </Box>
+                          </Box>)
+                      })
+
+                    }
+
+                  </CardContent>
+                  : <div>Loading...</div>
+              }
+            </Box>
+          </Card>
         </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <SalesByCountries />
-        </Grid>
-        <Grid item xs={12} md={12} lg={8}>
-          <DepositWithdraw />
-        </Grid>
-        <Grid item xs={12}>
-          <Table />
-        </Grid>
+
       </Grid>
     </ApexChartWrapper>
   )

@@ -28,6 +28,7 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authService } from '../../services/auth.service';
+import { userService } from 'src/services/user.service';
 
 interface State {
   newPassword: string
@@ -116,13 +117,17 @@ const TabSecurity = () => {
   );
   const onSubmit = handleSubmit((data: PasswordResetRequest) => {
     setValues({ ...values, message: "", error: "", loading: true })
-    authService.passwordReset(data).then((data: any) => {
+    userService.updatePassword(data).then((data: any) => {
       console.log(data);
-
+      setValues({ ...values, message: `${data.data} you have to login again in 3 seconds`, error: '', loading: false })
+      setTimeout(() => {
+        authService.logout();
+      }, 3000);
     }
       , (error) => {
-        setValues({ ...values, message: "", error: error.message, loading: false })
-        // resetFields();
+        if (error.response.status === 417) {
+          setValues({ ...values, error: error.response.data.data, loading: false })
+        }
       }
     )
   })
@@ -230,7 +235,7 @@ const TabSecurity = () => {
       <CardContent>
 
         <Box sx={{ mt: 11 }}>
-          <Button variant='contained' sx={{ marginRight: 3.5 }}  type='submit' disabled={values.loading}>
+          <Button variant='contained' sx={{ marginRight: 3.5 }} type='submit' disabled={values.loading}>
             {values.loading ? 'Saving...' : 'Save changes'}
           </Button>
           <Button

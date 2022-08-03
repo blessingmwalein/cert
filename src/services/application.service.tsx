@@ -106,3 +106,4 @@ async function update(loginRequest: ApplicationRequest): Promise<any> {
     const { data } = response;
     return data;
 }
+

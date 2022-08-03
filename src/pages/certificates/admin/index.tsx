@@ -18,6 +18,12 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import { certificateService } from 'src/services/certificate-service'
 import { useEffect, useState, ChangeEvent } from 'react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 interface Column {
     id: 'grad' | 'student' | 'regNumber' | 'program' | 'nationalId' | 'institution' | 'createdAt' | 'signature' | 'classification' | 'dob' | 'enrol ' | 'actions',
@@ -91,6 +97,8 @@ const All = () => {
     const [page, setPage] = useState<number>(0)
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
     const [certificates, setCertificates] = useState<any>([]);
+    const [open, setOpen] = useState(false);
+    const [openReject, setOpenReject] = useState(false);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage)
@@ -100,6 +108,23 @@ const All = () => {
         setRowsPerPage(+event.target.value)
         setPage(0)
     }
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleClickOpenReject = () => {
+        setOpenReject(true);
+    };
+
+    const handleCloseReject = () => {
+        setOpenReject(false);
+    };
+
 
     const getCerficates = () => {
         return certificateService.all().then((data: any) => {
@@ -186,21 +211,61 @@ const All = () => {
                                                         </TableCell>
                                                     ) : (
                                                         <TableCell key={column.id} align={column.align}>
-                                                            <Link href="#" onClick={rejectCertificate(row.id)}>Reject</Link>
-                                                            <Link href="#">{"    "}</Link>
-                                                            <Link href="#" onClick={signCertificate(row.id)}>Sign</Link>
+                                                            <Button onClick={handleClickOpen} style={{ color: "blue", backgroundColor: '#F5F5F5', marginBottom: "2px" }}>Sign</Button>
+                                                            <Button onClick={handleClickOpenReject} style={{ color: "red", backgroundColor: '#F5F5F5' }}>Reject</Button>
                                                         </TableCell>
                                                     )
                                                 })}
+                                                <Dialog
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    aria-labelledby="alert-dialog-title"
+                                                    aria-describedby="alert-dialog-description"
+                                                >
+                                                    <DialogTitle id="alert-dialog-title">
+                                                        {"Sign this application"}
+                                                    </DialogTitle>
+                                                    <DialogContent>
+                                                        <DialogContentText id="alert-dialog-description">
+                                                            Are you sure you want to sign this application
+                                                        </DialogContentText>
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button onClick={handleClose}>Disagree</Button>
+                                                        <Button onClick={() => signCertificate(row)} autoFocus>
+                                                            Agree
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
 
+                                                <Dialog
+                                                    open={openReject}
+                                                    onClose={handleCloseReject}
+                                                    aria-labelledby="alert-dialog-title"
+                                                    aria-describedby="alert-dialog-description"
+                                                >
+                                                    <DialogTitle id="alert-dialog-title">
+                                                        {"Reject this application"}
+                                                    </DialogTitle>
+                                                    <DialogContent>
+                                                        <DialogContentText id="alert-dialog-description">
+                                                            Are you sure you want to reject this application
+                                                        </DialogContentText>
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button onClick={handleCloseReject}>Disagree</Button>
+                                                        <Button onClick={() => rejectCertificate(row)} autoFocus>
+                                                            Agree
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
                                             </TableRow>
                                         )
                                     }) : (<Alert
                                         severity='warning'
-                                        sx={{ '& a': { fontWeight: 400, width :'100%',textAlign:'center' } }}
+                                        sx={{ '& a': { fontWeight: 400, width: '100%', textAlign: 'center' } }}
                                     >
                                         <AlertTitle>No certificates yet</AlertTitle>
-
                                     </Alert>)}
                                 </TableBody>
                             </Table>

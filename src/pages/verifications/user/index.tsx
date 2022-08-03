@@ -51,7 +51,7 @@ const Verifications = () => {
 
 
     function getAllVerifications() {
-        verificationService.institution().then(res => {
+        verificationService.getUserVerifications().then(res => {
             console.log(res);
             setVerifications(res);
         }

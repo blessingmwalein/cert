@@ -22,48 +22,42 @@ import { useEffect, useState } from 'react'
 import { PaymentStatusResponse } from 'src/models/payments/payment-request'
 
 
-interface State {
-    message: string,
-    error: string,
-    loading: boolean,
-    id: number
-    paymentStatus: PaymentStatusResponse
-}
-
-
-const PaymentStatus = () => {
+const Id = () => {
     const router = useRouter()
 
-    const [values, setValues] = useState<State>({
-        message: '',
-        error: '',
-        loading: true,
-        id: 0,
-        paymentStatus: {
-            paid: 0,
-            status: '',
-            total: 0
-        }
-    })
-    const confirmPayment = (): any => {
-        const { id } = router.query
-        return paymentService.confirmPayment(22).then((data) => {
-            console.log(data);
-            setValues({ ...values, paymentStatus: data, loading: false })
+    // const [values, setValues] = useState<State>({
+    //     message: '',
+    //     error: '',
+    //     loading: true,
+    // })
 
+    const [paymentStatus, setPaymentStatus] = useState<any>({})
+    const [date, setDate] = useState<any>()
+    const [id, setId] = useState<any>()
+
+    const confirmPayment = (id: number): any => {
+
+        return paymentService.confirmPayment(id).then((data) => {
+            console.log(data);
+            // setValues({ ...values, message: '', error: '', loading: false })
+            setPaymentStatus(data)
+            setDate(new Date().toUTCString())
         }).catch((error: any) => {
+            // setValues({ ...values, message: '', error: '', loading: false })
             console.log(error);
         })
     }
 
     useEffect(() => {
-        confirmPayment();
+        const { id } = router.query
+        setId(id)
+        confirmPayment(id);
     }, []);
 
     return (
         <Grid container spacing={6}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-                <Typography variant='h5'>Payment status for order 7</Typography>
+                <Typography variant='h5'>Payment status for order {id}</Typography>
             </Grid>
 
 
@@ -90,12 +84,12 @@ const PaymentStatus = () => {
                                     }}
                                 >
                                     <Box sx={{ marginRight: 2, display: 'flex', flexDirection: 'column' }}>
-                                        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Paid : Yes</Typography>
-                                        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Status : Submitted for settlement</Typography>
-                                        <Typography variant='caption'>Date : 2022/07/34:13:05</Typography>
+                                        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Paid : {paymentStatus.paid}</Typography>
+                                        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Status : {paymentStatus.status}</Typography>
+                                        <Typography variant='caption'>Date :{date} </Typography>
                                     </Box>
                                     <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'success.main' }}>
-                                        200.00
+                                        ${paymentStatus.total}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -110,5 +104,5 @@ const PaymentStatus = () => {
     )
 }
 
-export default PaymentStatus
+export default Id
 

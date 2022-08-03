@@ -4,11 +4,7 @@ import { ChangeEvent, forwardRef, MouseEvent, useState } from 'react'
 // ** Styled Component
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
-// ** Demo Components Imports
-import FormLayoutsBasic from 'src/views/form-layouts/FormLayoutsBasic'
-import FormLayoutsIcons from 'src/views/form-layouts/FormLayoutsIcons'
-import FormLayoutsSeparator from 'src/views/form-layouts/FormLayoutsSeparator'
-import FormLayoutsAlignment from 'src/views/form-layouts/FormLayoutsAlignment'
+
 import FormHelperText from '@mui/material/FormHelperText'
 
 import Card from '@mui/material/Card'
@@ -41,8 +37,8 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { VerifyRequest } from 'src/models/application/application-request'
 import { verificationService } from 'src/services/verification-service'
+import { VerifyRequest } from 'src/models/verification/verification-request'
 // import { applicationService } from 'src/services/application.service'
 
 interface State {
