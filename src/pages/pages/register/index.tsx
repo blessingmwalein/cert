@@ -255,13 +255,12 @@ const RegisterPage = () => {
               <InputLabel id='form-layouts-separator-select-label'>Register as Holder</InputLabel>
               <Select
                 label='Country'
-                defaultValue='false'
                 id='form-layouts-separator-select'
                 labelId='form-layouts-separator-select-label'
+                {...register('registerAsHolder')}
               >
                 <MenuItem value='true'>Yes</MenuItem>
                 <MenuItem value='false'>No</MenuItem>
-
               </Select>
             </FormControl>
             <FormControl fullWidth  {...register('password')}>
