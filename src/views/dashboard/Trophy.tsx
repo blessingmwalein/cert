@@ -60,13 +60,11 @@ const Trophy = (props: any) => {
         {
           userDetails.role[0].role === 'ROLE_USER' ? <Button size='small' variant='contained' onClick={() => createNewVerification()}>
             New verification
-          </Button> : <div></div>
-        }
-        {
-          userDetails.role[0].role === 'ROLE_HOLDER' ? <Button size='small' variant='contained' onClick={() => createNewApplication()}>
+          </Button> : <Button size='small' variant='contained' onClick={() => createNewApplication()}>
             New application
-          </Button> : <div></div>
+          </Button>
         }
+
 
         <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
         <TrophyImg alt='trophy' src='/images/misc/trophy.png' />
