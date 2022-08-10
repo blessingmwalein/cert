@@ -76,12 +76,12 @@ const roleHolderNavigation = (): VerticalNavItemsType => {
       path: '/applications/holder/apply',
       // openInNewTab: true
     },
-    {
-      title: 'Update',
-      icon: AccountEditOutline,
-      path: '/applications/holder/update',
-      // openInNewTab: true
-    },
+    // {
+    //   title: 'Update',
+    //   icon: AccountEditOutline,
+    //   path: '/applications/holder/update',
+    //   // openInNewTab: true
+    // },
     {
       sectionTitle: 'Payments'
     },
@@ -174,7 +174,13 @@ const roleRegisterNavigation = (): VerticalNavItemsType => {
       sectionTitle: 'Pages'
     },
     {
-      title: 'Institution Applications',
+      title: 'Verify',
+      icon: AccountCheckOutline,
+      path: '/verifications/user/verify',
+      // openInNewTab: true
+    },
+    {
+      title: 'Applications',
       icon: AccountDetailsOutline,
       path: '/applications/admin/institution',
       // openInNewTab: true
@@ -185,26 +191,20 @@ const roleRegisterNavigation = (): VerticalNavItemsType => {
       path: '/certificates/admin/create',
       // openInNewTab: true
     },
+    // {
+    //   title: 'Update Certificate',
+    //   icon: AccountEditOutline,
+    //   path: '/certificates/admin/update',
+    //   // openInNewTab: true
+    // },
     {
-      title: 'Update Certificate',
-      icon: AccountEditOutline,
-      path: '/certificates/admin/update',
-      // openInNewTab: true
-    },
-    {
-      title: 'Institution Certificate',
+      title: 'Certificates',
       icon: AccountDetailsOutline,
       path: '/certificates/admin/institution',
       // openInNewTab: true
     },
     {
-      title: 'Verify',
-      icon: AccountCheckOutline,
-      path: '/verifications/user/verify',
-      // openInNewTab: true
-    },
-    {
-      title: 'Institution Verifications',
+      title: 'Verifications',
       icon: AccountCheckOutline,
       path: '/verifications/admin/institution',
       // openInNewTab: true

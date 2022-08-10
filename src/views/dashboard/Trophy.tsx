@@ -35,6 +35,13 @@ const Trophy = (props: any) => {
     router.push("/payments/send/");
   }
 
+  const createNewVerification = () => {
+    router.push("/verifications/user/verify/");
+  }
+  const createNewApplication = () => {
+    router.push("/applications/holder/apply/");
+  }
+
   const imageSrc = theme.palette.mode === 'light' ? 'triangle-light.png' : 'triangle-dark.png'
 
   return (
@@ -47,9 +54,20 @@ const Trophy = (props: any) => {
         <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
           ${balanceData.balance}
         </Typography>
-        <Button size='small' variant='contained' onClick={() => topUp()}>
+        <Button size='small' variant='contained' sx={{ mr: 4 }} onClick={() => topUp()}>
           Top Up
         </Button>
+        {
+          userDetails.role[0].role === 'ROLE_USER' ? <Button size='small' variant='contained' onClick={() => createNewVerification()}>
+            New verification
+          </Button> : <div></div>
+        }
+        {
+          userDetails.role[0].role === 'ROLE_HOLDER' ? <Button size='small' variant='contained' onClick={() => createNewApplication()}>
+            New application
+          </Button> : <div></div>
+        }
+
         <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
         <TrophyImg alt='trophy' src='/images/misc/trophy.png' />
       </CardContent>

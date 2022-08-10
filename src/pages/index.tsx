@@ -81,79 +81,127 @@ const Dashboard = () => {
     getPaymentHistory()
   }
 
+  const createNewVerification = () => {
+    router.push("/verifications/user/verify/");
+  }
+  const createNewCertificate = () => {
+    router.push("/certificates/admin/create/");
+  }
+
 
   useEffect(() => {
     getUser()
   }
     , [])
-  return (
+  return !values.loading ? (
     <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={12}>
-          <Trophy userDetails={userDetails} balanceData={balanceData} />
-        </Grid>
-        <Grid item sm={12} xs={12}
-        >
-          <Card sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: ['column', 'column', 'row'] }}>
+      {userDetails.role[0].role === 'ROLE_USER' || userDetails.role[0].role === 'ROLE_HOLDER' ?
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={12}>
+            <Trophy userDetails={userDetails} balanceData={balanceData} />
+          </Grid>
+          <Grid item sm={12} xs={12}
+          >
+            <Card sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: ['column', 'column', 'row'] }}>
 
-            <Box sx={{ width: '100%' }}>
-              <CardHeader
-                title='Payment History'
-                sx={{ pt: 5.5, alignItems: 'center', '& .MuiCardHeader-action': { mt: 0.6 } }}
-                action={<Typography variant='caption'>View All</Typography>}
-                titleTypographyProps={{
-                  variant: 'h6',
-                  sx: { lineHeight: '1.6 !important', letterSpacing: '0.15px !important' }
-                }}
-              />
-              {
-                !values.loading ?
-                  <CardContent sx={{ pb: theme => `${theme.spacing(5.5)} !important` }}>
-                    {
-                      history.map((item: any, index: number) => {
-                        return (
+              <Box sx={{ width: '100%' }}>
+                <CardHeader
+                  title='Payment History'
+                  sx={{ pt: 5.5, alignItems: 'center', '& .MuiCardHeader-action': { mt: 0.6 } }}
+                  action={<Typography variant='caption'>View All</Typography>}
+                  titleTypographyProps={{
+                    variant: 'h6',
+                    sx: { lineHeight: '1.6 !important', letterSpacing: '0.15px !important' }
+                  }}
+                />
+
+                <CardContent sx={{ pb: theme => `${theme.spacing(5.5)} !important` }}>
+                  {
+                    history.map((item: any, index: number) => {
+                      return (
+                        <Box
+
+                          sx={{ display: 'flex', alignItems: 'center', mb: 6 }}
+                        >
+                          <Box sx={{ minWidth: 38, display: 'flex', justifyContent: 'center' }}>
+                            <img src='/images/logos/stripe.png' alt="Paynow" width="20" height="28" />
+                          </Box>
                           <Box
-
-                            sx={{ display: 'flex', alignItems: 'center', mb: 6 }}
+                            sx={{
+                              ml: 4,
+                              width: '100%',
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              alignItems: 'center',
+                              justifyContent: 'space-between'
+                            }}
                           >
-                            <Box sx={{ minWidth: 38, display: 'flex', justifyContent: 'center' }}>
-                              <img src='/images/logos/stripe.png' alt="Paynow" width="20" height="28" />
+                            <Box sx={{ marginRight: 2, display: 'flex', flexDirection: 'column' }}>
+                              <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Transaction #{item.id}</Typography>
+                              <Typography variant='caption'>Complete : {item.complete ? "Yes" : "Pending"}</Typography>
+                              <Typography variant='caption'>Poll Url : {item.pollURl}</Typography>
+                              <Typography variant='caption'>Date : {item.transactionDate}</Typography>
                             </Box>
-                            <Box
-                              sx={{
-                                ml: 4,
-                                width: '100%',
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                            >
-                              <Box sx={{ marginRight: 2, display: 'flex', flexDirection: 'column' }}>
-                                <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Transaction #{item.id}</Typography>
-                                <Typography variant='caption'>Complete : {item.complete ? "Yes" : "Pending"}</Typography>
-                                <Typography variant='caption'>Poll Url : {item.pollURl}</Typography>
-                                <Typography variant='caption'>Date : {item.transactionDate}</Typography>
-                              </Box>
-                              <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'danger.main' }}>
-                                Amount : ZWL{item.amount}
-                              </Typography>
-                            </Box>
-                          </Box>)
-                      })
+                            <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'danger.main' }}>
+                              Amount : ZWL{item.amount}
+                            </Typography>
+                          </Box>
+                        </Box>)
+                    })
 
-                    }
+                  }
 
-                  </CardContent>
-                  : <div>Loading...</div>
-              }
-            </Box>
-          </Card>
+                </CardContent>
+              </Box>
+            </Card>
+          </Grid>
+
+        </Grid> :
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={12}>
+            <Card sx={{ position: 'relative' }}>
+              <CardContent>
+                <Typography variant='h6'>Welcome {userDetails.username} 🥳</Typography>
+                <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+                  {/* Your currently balance */}
+                </Typography>
+             
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ position: 'relative' }}>
+              <CardContent>
+                {/* <Typography variant='h6'>Welcome {userDetails.username} 🥳</Typography> */}
+                <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+                  {/* Your currently balance */}
+                </Typography>
+                <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
+                  Verifications
+                </Typography>
+                <Button size='small' variant='contained' onClick={() => createNewVerification()}>
+                  Create new
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ position: 'relative' }}>
+              <CardContent>
+                <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
+                  Certificates
+                </Typography>
+                <Button size='small' variant='contained' onClick={() => createNewCertificate()}>
+                  Create new
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
         </Grid>
-
-      </Grid>
+      }
     </ApexChartWrapper>
-  )
+  ) : <div>Loading ....</div>
 }
 
 export default Dashboard
