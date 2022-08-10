@@ -21,6 +21,7 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import { User } from 'src/models/auth/auth-request'
 import { BalanceResponse } from 'src/models/payments/payment-request'
+import { authService } from 'src/services/auth.service'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -47,6 +48,7 @@ const UserDropdown = (props: Props) => {
   }
   const handleDropdownClose = (url?: string) => {
     if (url) {
+      authService.logout()
       router.push(url)
     }
     setAnchorEl(null)

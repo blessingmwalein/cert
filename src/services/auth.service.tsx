@@ -72,7 +72,7 @@ function decodeToken(): User {
 
 
 function logout() {
-    localStorage.removeItem('authData');
+    localStorage.clear();
     Router.push('/pages/login');
 }
 
