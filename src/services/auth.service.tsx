@@ -80,3 +80,7 @@ function clearLocalStorage() {
     localStorage.removeItem('authData');
 }
 
+function toAddMinutes(date: Date, minutes: number) {
+    return new Date(date.getTime() + minutes * 60000);
+}
+
