@@ -135,12 +135,12 @@ const roleAdminNavigation = (): VerticalNavItemsType => {
       path: '/certificates/admin/create',
       // openInNewTab: true
     },
-    {
-      title: 'Update Certificate',
-      icon: AccountEditOutline,
-      path: '/certificates/admin/update',
-      // openInNewTab: true
-    },
+    // {
+    //   title: 'Update Certificate',
+    //   icon: AccountEditOutline,
+    //   path: '/certificates/admin/update',
+    //   // openInNewTab: true
+    // },
     {
       title: 'Verifications',
       icon: AccountCheckOutline,

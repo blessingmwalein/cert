@@ -14,7 +14,8 @@ export const certificateService = {
     reject,
     sign,
     all,
-    institution
+    institution,
+    allCreated
 };
 
 async function create(certificateRequest: CreateCertificateRequest): Promise<any> {
@@ -66,6 +67,20 @@ async function update(loginRequest: ApplicationRequest): Promise<any> {
 
 async function all(): Promise<any> {
     const url = `${baseUrl}/all`;
+    const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
+    const response = await axios.get(
+        url,
+        {
+            headers: {
+                "Authorization": `Bearer ${authData.accessToken}`
+            }
+        },
+    );
+    const { data } = response;
+    return data;
+}
+async function allCreated(): Promise<any> {
+    const url = `${baseUrl}/all/created`;
     const authData: LoginResponse = JSON.parse(localStorage.getItem('authData') || '{}');
     const response = await axios.get(
         url,

@@ -2,25 +2,19 @@ const path = require('path')
 
 module.exports = {
   env: {
-    API_BASE_URL: process.env.API_BASE_URL,
+    API_BASE_URL: process.env.API_BASE_URL
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true
   },
   trailingSlash: true,
   reactStrictMode: false,
   experimental: {
     esmExternals: false,
-    jsconfigPaths: true // enables it for both jsconfig.json and tsconfig.json
+    jsconfigPaths: true
   },
   webpack: config => {
     config.resolve.alias = {
